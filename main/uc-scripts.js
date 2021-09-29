@@ -1,7 +1,19 @@
 const UC = function (element, options) {
-  const slider = {};
+  options = {
+    ...options,
 
-  function restructureHTML(slider) {
+    maxSlidesShown: options.maxSlidesShown || 1,
+    slidesPerClick: options.slidesPerClick || 1, // not set up
+    animationSpeed: options.animationSpeed || 500, // milliseconds
+    infiniteLoop:
+      options.infiniteLoop === undefined || options.infiniteLoop ? true : false,
+  };
+
+  function restructureHTML() {
+    console.log(options);
+
+    let slider = {};
+
     // Adjust main wrappers
     slider.el = $(element);
 
@@ -20,16 +32,26 @@ const UC = function (element, options) {
     });
 
     // Add slide copies
-    let before = slider.el.find(".uc--slide:last-child").html();
-    let after = slider.el.find(".uc--slide:first-child").html();
+    if (options.infiniteLoop) {
+      slider.firstSlides = slider.el.find(
+        ".uc--slide:nth-child(-n+" + options.maxSlidesShown + ")"
+      );
+      slider.lastSlides = slider.el.find(
+        ".uc--slide:nth-last-child(-n+" + options.maxSlidesShown + ")"
+      );
 
-    slider.el
-      .find(".uc--scroll-area")
-      .prepend("<div class='uc--slide copy before'>" + before + "</div>");
+      slider.el
+        .find(".uc--scroll-area")
+        .prepend(
+          slider.lastSlides.clone().removeClass("real").addClass("copy before")
+        );
 
-    slider.el
-      .find(".uc--scroll-area")
-      .append("<div class='uc--slide copy after'>" + after + "</div>");
+      slider.el
+        .find(".uc--scroll-area")
+        .append(
+          slider.firstSlides.clone().removeClass("real").addClass("copy after")
+        );
+    }
 
     // Add arrows and dots
     let indicators = `
@@ -62,7 +84,21 @@ const UC = function (element, options) {
     }
   }
 
-  function initVars(slider) {
+  function applyLayout() {
+    let slider = {};
+
+    slider.el = $(element);
+
+    if (options.maxSlidesShown) {
+      slider.el
+        .find(".uc--slide")
+        .css("flex-basis", `${100 / options.maxSlidesShown}%`);
+    }
+  }
+
+  function initVars() {
+    const slider = {};
+
     // GLOBAL variables
     slider.el = $(element);
 
@@ -91,102 +127,118 @@ const UC = function (element, options) {
     slider.scrollDist = slider.scrollWidth - slider.clientWidth;
     slider.startingPos = slider.slideWidth * slider.numVisBeforeChildren;
     slider.endingPos = slider.scrollDist - slider.slideWidth;
-    slider.dotActiveWidth = 8;
+    slider.dotActiveWidth =
+      8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
 
     // DEPENDANT variables
-    slider.max = slider.numRealChildren;
+    slider.max = options.infiniteLoop
+      ? slider.numRealChildren
+      : slider.numRealChildren - options.maxSlidesShown;
     slider.indicEndpoint = 8 * slider.max + 8 * 3;
-    slider.speed = 500;
+    slider.speed = options.animationSpeed;
     slider.halfspeed = slider.speed / 2;
+
+    return slider;
   }
 
   function scrollActions(slider, direction) {
-    slider.rightArrow.css("pointer-events", "none");
-    slider.leftArrow.css("pointer-events", "none");
+    if (
+      options.infiniteLoop ||
+      (!options.infiniteLoop &&
+        ((direction && slider.counter !== slider.max) ||
+          (!direction && slider.counter !== 0)))
+    ) {
+      slider.rightArrow.css("pointer-events", "none");
+      slider.leftArrow.css("pointer-events", "none");
 
-    let edge, pos, reset;
+      let edge, pos, reset;
 
-    if (direction) {
-      edge = slider.max;
-      reset = 0;
-      pos = slider.startingPos;
-    } else {
-      edge = 0;
-      reset = slider.max;
-      pos = slider.endingPos;
-    }
+      if (direction) {
+        edge = slider.max;
+        reset = 0;
+        pos = slider.startingPos;
+      } else {
+        edge = 0;
+        reset = slider.max;
+        pos = slider.endingPos;
+      }
 
-    slider.scrollArea.animate(
-      {
-        scrollLeft: `${direction ? "+" : "-"}=${slider.slideWidth}`,
-      },
-      slider.speed
-    );
-
-    slider.activeDots
-      .animate(
+      slider.scrollArea.animate(
         {
-          width: slider.dotActiveWidth + 16,
-          marginLeft: `${direction ? "+=0px" : "-=16px"}`,
+          scrollLeft: `${direction ? "+" : "-"}=${slider.slideWidth}`,
         },
-        slider.halfspeed
-      )
-      .promise()
-      .then(function () {
-        slider.activeDots
-          .animate(
-            {
-              width: slider.dotActiveWidth,
-              left: `${direction ? "+=16px" : "-=0"}`,
-            },
-            slider.halfspeed
-          )
-          .promise()
-          .then(function () {
-            if (direction && slider.counter !== slider.max) {
-              slider.counter++;
-            }
+        slider.speed
+      );
 
-            if (!direction) {
-              slider.activeDots.css("margin-left", "5px");
-              const leadLeftPos = parseInt(
-                  $(slider.leadingDot).css("left"),
-                  10
-                ),
-                trailLeftPos = parseInt($(slider.trailingDot).css("left"), 10);
-              slider.leadingDot.css("left", leadLeftPos - 16 + "px");
-              slider.trailingDot.css("left", trailLeftPos - 16 + "px");
-            }
-
-            if (slider.counter === edge) {
-              slider.scrollArea.scrollLeft(pos);
-              slider.counter = reset;
-            }
-
-            slider.activeDots.each(function () {
-              if (
-                parseInt($(this).css("left"), 10) ===
-                slider.sliderIndicsWidth + 16
-              ) {
-                $(this).css(
-                  "left",
-                  "-" + (slider.sliderIndicsWidth - 16) + "px"
-                );
-              } else if (
-                parseInt($(this).css("left"), 10) === -slider.sliderIndicsWidth
-              ) {
-                $(this).css("left", slider.sliderIndicsWidth + "px");
+      slider.activeDots
+        .animate(
+          {
+            width: slider.dotActiveWidth + 16,
+            marginLeft: `${direction ? "+=0px" : "-=16px"}`,
+          },
+          slider.halfspeed
+        )
+        .promise()
+        .then(function () {
+          slider.activeDots
+            .animate(
+              {
+                width: slider.dotActiveWidth,
+                left: `${direction ? "+=16px" : "-=0"}`,
+              },
+              slider.halfspeed
+            )
+            .promise()
+            .then(function () {
+              if (direction && slider.counter !== slider.max) {
+                slider.counter++;
               }
+
+              if (!direction) {
+                slider.activeDots.css("margin-left", "5px");
+                const leadLeftPos = parseInt(
+                    $(slider.leadingDot).css("left"),
+                    10
+                  ),
+                  trailLeftPos = parseInt(
+                    $(slider.trailingDot).css("left"),
+                    10
+                  );
+                slider.leadingDot.css("left", leadLeftPos - 16 + "px");
+                slider.trailingDot.css("left", trailLeftPos - 16 + "px");
+              }
+
+              if (slider.counter === edge && options.infiniteLoop) {
+                slider.scrollArea.scrollLeft(pos);
+                slider.counter = reset;
+              }
+
+              slider.activeDots.each(function () {
+                if (
+                  parseInt($(this).css("left"), 10) ===
+                  slider.sliderIndicsWidth + 16
+                ) {
+                  $(this).css(
+                    "left",
+                    "-" + (slider.sliderIndicsWidth - 16) + "px"
+                  );
+                } else if (
+                  parseInt($(this).css("left"), 10) ===
+                  -slider.sliderIndicsWidth
+                ) {
+                  $(this).css("left", slider.sliderIndicsWidth + "px");
+                }
+              });
+
+              if (!direction && slider.counter !== 0) {
+                slider.counter--;
+              }
+
+              slider.rightArrow.css("pointer-events", "auto");
+              slider.leftArrow.css("pointer-events", "auto");
             });
-
-            if (!direction && slider.counter !== 0) {
-              slider.counter--;
-            }
-
-            slider.rightArrow.css("pointer-events", "auto");
-            slider.leftArrow.css("pointer-events", "auto");
-          });
-      });
+        });
+    }
   }
 
   function initIndics(slider) {
@@ -204,8 +256,9 @@ const UC = function (element, options) {
   }
 
   function init() {
-    restructureHTML(slider);
-    initVars(slider);
+    restructureHTML();
+    applyLayout();
+    let slider = initVars();
     initIndics(slider);
   }
 
@@ -214,8 +267,15 @@ const UC = function (element, options) {
   };
 };
 
-const firstUC = new UC("#slider-1");
+const firstUC = new UC("#slider-1", {
+  infiniteLoop: true,
+  animationSpeed: 200,
+  maxSlidesShown: 3,
+});
 firstUC.init();
 
-const secondUC = new UC("#slider-2");
+const secondUC = new UC("#slider-2", {
+  maxSlidesShown: 2,
+  infiniteLoop: false,
+});
 secondUC.init();
