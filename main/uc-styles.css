@@ -1,34 +1,15 @@
 /* General */
-* {
-  box-sizing: border-box;
+
+.uc--wrapper {
+  position: relative;
 }
 
-body,
-html {
-  margin: 0;
-  padding: 20px;
-}
-
-.content-wrapper {
-  margin-bottom: 100px;
-}
-
-.container {
-  max-width: 800px;
-  width: 100%;
-  margin: 0 auto;
-}
-
-img {
+.uc--wrapper img {
   max-width: 100%;
   font-size: 0;
 }
 
 /* Carousel */
-
-.uc--wrapper {
-  position: relative;
-}
 
 .uc--wrapper .uc--scroll-area {
   display: flex;
@@ -43,9 +24,6 @@ img {
 }
 
 .uc--wrapper .uc--scroll-area .uc--slide .uc--content {
-  align-items: center;
-  border: 2px solid black;
-  padding: 20px;
   margin: 0 20px;
 }
 
@@ -97,7 +75,7 @@ img {
 
 @media (min-width: 768px) {
   .uc--wrapper {
-    padding: 40px;
+    padding: 0 50px;
   }
   .uc--wrapper .uc--indicators .uc--scroll-right,
   .uc--wrapper .uc--indicators .uc--scroll-left {
@@ -112,4 +90,62 @@ img {
   .uc--wrapper .uc--indicators .uc--scroll-right {
     transform: translate(100%, -50%);
   }
+}
+
+/* Smooth Edges & Spacing */
+
+.uc--wrapper .uc--scroll-area {
+  padding: 100px;
+  margin: -100px;
+
+  mask-image: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 25% 75%,
+      transparent 100%
+    ),
+    linear-gradient(to right, transparent 13%, #000 16% 84%, transparent 87%);
+  mask-size: 110% 110%;
+  mask-position: center;
+  mask-repeat: no-repeat;
+  mask-composite: source-in;
+  -webkit-mask: linear-gradient(
+      to bottom,
+      transparent 0%,
+      #000 25% 75%,
+      transparent 100%
+    ),
+    linear-gradient(to right, transparent 13%, #000 16% 84%, transparent 87%);
+  -webkit-mask-size: 110% 110%;
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-composite: source-in;
+}
+
+/* !!! REMOVE LATER !!! */
+
+* {
+  box-sizing: border-box;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 800px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.content-wrapper {
+  padding: 100px 0;
+}
+
+.uc--wrapper .uc--scroll-area .uc--slide .uc--content {
+  padding: 20px;
+  border: 1px solid black;
+  box-shadow: 28px 28px 100px rgb(13 39 80 / 16%);
 }

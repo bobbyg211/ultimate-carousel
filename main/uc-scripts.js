@@ -3,7 +3,6 @@ const UC = function (element, options) {
     ...options,
 
     maxSlidesShown: options.maxSlidesShown || 1,
-    slidesPerClick: options.slidesPerClick || 1, // not set up
     animationSpeed: options.animationSpeed || 500, // milliseconds
     infiniteLoop:
       options.infiniteLoop === undefined || options.infiniteLoop ? true : false,
@@ -269,7 +268,7 @@ const UC = function (element, options) {
 
 const firstUC = new UC("#slider-1", {
   infiniteLoop: true,
-  animationSpeed: 200,
+  animationSpeed: 2000,
   maxSlidesShown: 3,
 });
 firstUC.init();
