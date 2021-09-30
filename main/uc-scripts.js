@@ -2,10 +2,13 @@ const UC = function (element, options) {
   options = {
     ...options,
 
-    maxSlidesShown: options.maxSlidesShown || 1,
     animationSpeed: options.animationSpeed || 500, // milliseconds
+    autoSlide: options.autoSlide ? true : false,
+    autoSlideDelay: options.autoSlideDelay || 2000,
+    autoSlideOnHover: options.autoSlideOnHover ? true : false,
     infiniteLoop:
       options.infiniteLoop === undefined || options.infiniteLoop ? true : false,
+    maxSlidesShown: options.maxSlidesShown || 1,
   };
 
   function restructureHTML() {
@@ -241,17 +244,48 @@ const UC = function (element, options) {
   }
 
   function initIndics(slider) {
+    // Initial positioning
     slider.scrollArea.scrollLeft(slider.startingPos);
     slider.activeDots.width(slider.dotActiveWidth);
     slider.leadingDot.css("left", slider.sliderIndicsWidth + "px");
 
+    // Scroll on click
     slider.arrows.click(function () {
       if ($(this).hasClass("uc--scroll-right")) {
         scrollActions(slider, true);
       } else {
         scrollActions(slider, false);
       }
+
+      // Stop auto slide on arrow click
+      if (options.autoSlide) {
+        clearInterval(scrollInterval);
+        scrollInterval = setInterval(function () {
+          scrollActions(slider, true);
+        }, options.autoSlideDelay);
+      }
     });
+
+    // Auto slide
+    let scrollInterval;
+    if (options.autoSlide) {
+      scrollInterval = setInterval(function () {
+        scrollActions(slider, true);
+      }, options.autoSlideDelay);
+    }
+
+    // Stop auto slide on hover
+    if (options.autoSlide && !options.autoSlideOnHover) {
+      slider.el.mouseover(function () {
+        clearInterval(scrollInterval);
+      });
+
+      slider.el.mouseleave(function () {
+        scrollInterval = setInterval(function () {
+          scrollActions(slider, true);
+        }, options.autoSlideDelay);
+      });
+    }
   }
 
   function init() {
@@ -268,7 +302,7 @@ const UC = function (element, options) {
 
 const firstUC = new UC("#slider-1", {
   infiniteLoop: true,
-  animationSpeed: 2000,
+  autoSlide: true,
   maxSlidesShown: 3,
 });
 firstUC.init();
