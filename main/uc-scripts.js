@@ -2,7 +2,7 @@ const UC = function (element, options) {
   const validOpts = {
     ...options,
 
-    animationSpeed: options.animationSpeed || 500, // milliseconds
+    animationSpeed: errorHandling("animationSpeed", options.animationSpeed), // milliseconds
     autoSlide:
       (options.autoSlide && !options.continuousLoop) ||
       options.navigationDirection === "none"
@@ -22,10 +22,28 @@ const UC = function (element, options) {
       !options.continuousLoop
         ? true
         : false,
-    stopOnHover: options.stopOnHover || options.continuousLoop ? true : false,
+    stopOnHover:
+      ((options.stopOnHover === undefined || options.stopOnHover) &&
+        options.continuousLoop) ||
+      options.autoSlide
+        ? true
+        : false,
   };
 
   function errorHandling(option, value) {
+    // Animation Speed
+    if (option === "animationSpeed") {
+      if ((typeof value === "number" && value > 0) || value === undefined) {
+        return options.animationSpeed || 500;
+      } else {
+        let err = new Error(
+          `animationSpeed value must be a number greater than 0.`
+        );
+        err.name = `Invalid Value '${value}'`;
+        throw err;
+      }
+    }
+
     // Continuous Speed
     if (option === "continuousSpeed") {
       if (
