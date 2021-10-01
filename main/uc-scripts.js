@@ -3,18 +3,30 @@ const UC = function (element, options) {
     ...options,
 
     animationSpeed: options.animationSpeed || 500, // milliseconds
-    autoSlide: options.autoSlide && !options.continuousLoop ? true : false,
-    autoSlideDelay: options.autoSlideDelay || 2000,
+    autoSlide:
+      (options.autoSlide && !options.continuousLoop) ||
+      options.navigationDirection === "none"
+        ? true
+        : false,
+    autoSlideDelay: options.autoSlideDelay || 5000,
     continuousLoop: options.continuousLoop ? true : false,
     continuousSpeed: options.continuousSpeed || 5, // scale 1-10
     infiniteLoop:
       options.infiniteLoop === undefined ||
       options.infiniteLoop ||
       options.continuousLoop ||
-      options.autoSlide
+      options.autoSlide ||
+      options.navigationDirection === "one-way" ||
+      options.navigationDirection === "none"
         ? true
         : false,
     maxSlidesShown: options.maxSlidesShown || 1,
+    navigationDirection: options.navigationDirection || "two-way", // "two-way", "one-way", "none"
+    showIndicatorDots:
+      (options.showIndicatorDots === undefined || options.showIndicatorDots) &&
+      !options.continuousLoop
+        ? true
+        : false,
     stopOnHover: options.stopOnHover ? true : false,
   };
 
@@ -71,22 +83,37 @@ const UC = function (element, options) {
     if (!options.continuousLoop) {
       let indicators = `
     <div class="uc--indicators">
-      <button class="uc--scroll-right uc--arrow">
+      
+      ${
+        options.navigationDirection === "two-way"
+          ? `<button class="uc--scroll-left uc--arrow">
+      <img
+        src="https://www.enrollify.org/hubfs/Empower/images/icons/grey-arrow-left.svg"
+        alt="Scroll Left"
+      />
+    </button>`
+          : ""
+      }
+      ${
+        options.navigationDirection !== "none"
+          ? `<button class="uc--scroll-right uc--arrow">
         <img
           src="https://www.enrollify.org/hubfs/Empower/images/icons/grey-arrow-right.svg"
           alt="Scroll Right"
         />
-      </button>
-      <button class="uc--scroll-left uc--arrow">
-        <img
-          src="https://www.enrollify.org/hubfs/Empower/images/icons/grey-arrow-left.svg"
-          alt="Scroll Left"
-        />
-      </button>
-      <div class="uc--slider-indics">
-        <span class="uc--dot active trailing"></span>
-        <span class="uc--dot active leading"></span>
-      </div>
+      </button>`
+          : ""
+      }
+      
+      ${
+        options.showIndicatorDots
+          ? `<div class="uc--slider-indics">
+      <span class="uc--dot active trailing"></span>
+      <span class="uc--dot active leading"></span>
+    </div>`
+          : ""
+      }
+      
     </div>
     `;
 
@@ -278,8 +305,6 @@ const UC = function (element, options) {
 
   function initIndics(slider) {
     if (!options.continuousLoop) {
-      console.log("onebyone");
-
       // Initial positioning
       slider.scrollArea.scrollLeft(slider.startingPos);
       slider.activeDots.width(slider.dotActiveWidth);
@@ -350,19 +375,14 @@ const UC = function (element, options) {
 };
 
 const firstUC = new UC("#slider-1", {
-  infiniteLoop: true,
+  infiniteLoop: false,
   maxSlidesShown: 1,
-  continuousLoop: true,
-  stopOnHover: true,
-  continuousSpeed: 8,
+  navigationDirection: "one-way",
 });
 firstUC.init();
 
 const secondUC = new UC("#slider-2", {
-  autoSlide: true,
   maxSlidesShown: 1,
   continuousLoop: true,
-  stopOnHover: true,
-  continuousSpeed: 8,
 });
 secondUC.init();
