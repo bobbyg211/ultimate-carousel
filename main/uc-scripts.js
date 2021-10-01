@@ -1,5 +1,5 @@
 const UC = function (element, options) {
-  options = {
+  const validOpts = {
     ...options,
 
     animationSpeed: options.animationSpeed || 500, // milliseconds
@@ -10,18 +10,13 @@ const UC = function (element, options) {
         : false,
     autoSlideDelay: options.autoSlideDelay || 5000,
     continuousLoop: options.continuousLoop ? true : false,
-    continuousSpeed: options.continuousSpeed || 5, // scale 1-10
-    infiniteLoop:
-      options.infiniteLoop === undefined ||
-      options.infiniteLoop ||
-      options.continuousLoop ||
-      options.autoSlide ||
-      options.navigationDirection === "one-way" ||
-      options.navigationDirection === "none"
-        ? true
-        : false,
+    continuousSpeed: errorHandling("continuousSpeed", options.continuousSpeed), // scale 1-10
+    infiniteLoop: errorHandling("infiniteLoop", options.infiniteLoop),
     maxSlidesShown: options.maxSlidesShown || 1,
-    navigationDirection: options.navigationDirection || "two-way", // "two-way", "one-way", "none"
+    navigationDirection: errorHandling(
+      "navigationDirection",
+      options.navigationDirection
+    ), // "two-way", "one-way", "none"
     showIndicatorDots:
       (options.showIndicatorDots === undefined || options.showIndicatorDots) &&
       !options.continuousLoop
@@ -30,8 +25,96 @@ const UC = function (element, options) {
     stopOnHover: options.stopOnHover || options.continuousLoop ? true : false,
   };
 
+  function errorHandling(option, value) {
+    // Continuous Speed
+    if (option === "continuousSpeed") {
+      if (
+        (typeof value === "number" && value >= 1 && value <= 10) ||
+        value === undefined
+      ) {
+        return value || 5;
+      } else {
+        let err = new Error(
+          `continuousSpeed value must be a number from 1-10.`
+        );
+        err.name = `Invalid Value '${value}'`;
+        throw err;
+      }
+    }
+
+    // Infinite Loop
+    if (option === "infiniteLoop") {
+      if (
+        options.infiniteLoop === undefined ||
+        options.infiniteLoop ||
+        options.continuousLoop ||
+        options.autoSlide ||
+        options.navigationDirection === "one-way" ||
+        options.navigationDirection === "none"
+      ) {
+        if (options.infiniteLoop !== undefined) {
+          if (options.continuousLoop) {
+            console.warn(
+              "Warning: Setting a value for infiniteLoop will have no effect because continuousLoop is set to TRUE."
+            );
+          }
+
+          if (options.autoSlide) {
+            console.warn(
+              "Warning: Setting a value for infiniteLoop will have no effect because autoSlide is set to TRUE."
+            );
+          }
+
+          if (options.navigationDirection === "one-way") {
+            console.warn(
+              "Warning: Setting a value for infiniteLoop will have no effect because navigationDirection is set to 'one-way'."
+            );
+          }
+
+          if (options.navigationDirection === "none") {
+            console.warn(
+              "Warning: Setting a value for infiniteLoop will have no effect because navigationDirection is set to 'none'."
+            );
+          }
+        }
+
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    // Navigation Direction
+    if (option === "navigationDirection") {
+      if (
+        (typeof options.navigationDirection === "string" &&
+          (options.navigationDirection === "two-way" ||
+            options.navigationDirection === "one-way" ||
+            options.navigationDirection === "none")) ||
+        options.navigationDirection === undefined
+      ) {
+        if (
+          options.continuousLoop &&
+          options.navigationDirection !== undefined
+        ) {
+          console.warn(
+            "Warning: Setting a value for navigationDirection will have no effect here because continuousLoop is set to TRUE."
+          );
+        }
+
+        return options.navigationDirection || "two-way";
+      } else {
+        let err = new Error(
+          `navigationDirection value must be "two-way", "one-way", or "none".`
+        );
+        err.name = `Invalid Value '${value}'`;
+        throw err;
+      }
+    }
+  }
+
   function restructureHTML() {
-    console.log(options);
+    console.log(validOpts);
 
     let slider = {};
 
@@ -53,15 +136,15 @@ const UC = function (element, options) {
     });
 
     // Add slide copies
-    if (options.infiniteLoop) {
+    if (validOpts.infiniteLoop) {
       slider.firstSlides = slider.el.find(
-        ".uc--slide:nth-child(-n+" + options.maxSlidesShown + ")"
+        ".uc--slide:nth-child(-n+" + validOpts.maxSlidesShown + ")"
       );
       slider.lastSlides = slider.el.find(
-        ".uc--slide:nth-last-child(-n+" + options.maxSlidesShown + ")"
+        ".uc--slide:nth-last-child(-n+" + validOpts.maxSlidesShown + ")"
       );
 
-      if (!options.continuousLoop) {
+      if (!validOpts.continuousLoop) {
         slider.el
           .find(".uc--scroll-area")
           .prepend(
@@ -80,12 +163,12 @@ const UC = function (element, options) {
     }
 
     // Add arrows and dots
-    if (!options.continuousLoop) {
+    if (!validOpts.continuousLoop) {
       let indicators = `
     <div class="uc--indicators">
       
       ${
-        options.navigationDirection === "two-way"
+        validOpts.navigationDirection === "two-way"
           ? `<button class="uc--scroll-left uc--arrow">
       <img
         src="https://www.enrollify.org/hubfs/Empower/images/icons/grey-arrow-left.svg"
@@ -95,7 +178,7 @@ const UC = function (element, options) {
           : ""
       }
       ${
-        options.navigationDirection !== "none"
+        validOpts.navigationDirection !== "none"
           ? `<button class="uc--scroll-right uc--arrow">
         <img
           src="https://www.enrollify.org/hubfs/Empower/images/icons/grey-arrow-right.svg"
@@ -106,7 +189,7 @@ const UC = function (element, options) {
       }
       
       ${
-        options.showIndicatorDots
+        validOpts.showIndicatorDots
           ? `<div class="uc--slider-indics">
       <span class="uc--dot active trailing"></span>
       <span class="uc--dot active leading"></span>
@@ -132,10 +215,10 @@ const UC = function (element, options) {
 
     slider.el = $(element);
 
-    if (options.maxSlidesShown) {
+    if (validOpts.maxSlidesShown) {
       slider.el
         .find(".uc--slide")
-        .css("flex-basis", `${100 / options.maxSlidesShown}%`);
+        .css("flex-basis", `${100 / validOpts.maxSlidesShown}%`);
     }
   }
 
@@ -170,14 +253,14 @@ const UC = function (element, options) {
     slider.startingPos = slider.slideWidth * slider.numBeforeChildren;
     slider.endingPos = slider.scrollDist - slider.slideWidth;
     slider.dotActiveWidth =
-      8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
+      8 * validOpts.maxSlidesShown + 8 * (validOpts.maxSlidesShown - 1);
 
     // DEPENDANT variables
-    slider.max = options.infiniteLoop
+    slider.max = validOpts.infiniteLoop
       ? slider.numRealChildren
-      : slider.numRealChildren - options.maxSlidesShown;
+      : slider.numRealChildren - validOpts.maxSlidesShown;
     slider.indicEndpoint = 8 * slider.max + 8 * 3;
-    slider.speed = options.animationSpeed;
+    slider.speed = validOpts.animationSpeed;
     slider.halfspeed = slider.speed / 2;
 
     return slider;
@@ -185,8 +268,8 @@ const UC = function (element, options) {
 
   function scrollActions(slider, direction) {
     if (
-      options.infiniteLoop ||
-      (!options.infiniteLoop &&
+      validOpts.infiniteLoop ||
+      (!validOpts.infiniteLoop &&
         ((direction && slider.counter !== slider.max) ||
           (!direction && slider.counter !== 0)))
     ) {
@@ -250,7 +333,7 @@ const UC = function (element, options) {
                 slider.trailingDot.css("left", trailLeftPos - 16 + "px");
               }
 
-              if (slider.counter === edge && options.infiniteLoop) {
+              if (slider.counter === edge && validOpts.infiniteLoop) {
                 slider.scrollArea.scrollLeft(pos);
                 slider.counter = reset;
               }
@@ -286,9 +369,9 @@ const UC = function (element, options) {
   function infiniteScroll(slider) {
     let speed =
       ((slider.scrollDist - slider.scrollArea.scrollLeft()) /
-        (slider.slideWidth * options.maxSlidesShown)) *
+        (slider.slideWidth * validOpts.maxSlidesShown)) *
       1000 *
-      (11 - options.continuousSpeed);
+      (11 - validOpts.continuousSpeed);
 
     slider.scrollArea.animate(
       {
@@ -304,7 +387,7 @@ const UC = function (element, options) {
   }
 
   function initIndics(slider) {
-    if (!options.continuousLoop) {
+    if (!validOpts.continuousLoop) {
       // Initial positioning
       slider.scrollArea.scrollLeft(slider.startingPos);
       slider.activeDots.width(slider.dotActiveWidth);
@@ -319,24 +402,24 @@ const UC = function (element, options) {
         }
 
         // Stop auto slide on arrow click
-        if (options.autoSlide) {
+        if (validOpts.autoSlide) {
           clearInterval(scrollInterval);
           scrollInterval = setInterval(function () {
             scrollActions(slider, true);
-          }, options.autoSlideDelay);
+          }, validOpts.autoSlideDelay);
         }
       });
 
       // Auto slide
       let scrollInterval;
-      if (options.autoSlide) {
+      if (validOpts.autoSlide) {
         scrollInterval = setInterval(function () {
           scrollActions(slider, true);
-        }, options.autoSlideDelay);
+        }, validOpts.autoSlideDelay);
       }
 
       // Stop auto slide on hover
-      if (options.autoSlide && options.stopOnHover) {
+      if (validOpts.autoSlide && validOpts.stopOnHover) {
         slider.el.mouseover(function () {
           clearInterval(scrollInterval);
         });
@@ -344,13 +427,13 @@ const UC = function (element, options) {
         slider.el.mouseleave(function () {
           scrollInterval = setInterval(function () {
             scrollActions(slider, true);
-          }, options.autoSlideDelay);
+          }, validOpts.autoSlideDelay);
         });
       }
     } else {
       infiniteScroll(slider);
 
-      if (options.stopOnHover) {
+      if (validOpts.stopOnHover) {
         slider.el.mouseenter(function () {
           slider.scrollArea.stop(true);
         });
@@ -379,11 +462,11 @@ const firstUC = new UC("#slider-1", {
   maxSlidesShown: 1,
   navigationDirection: "one-way",
   continuousLoop: true,
+  continuousSpeed: 4,
 });
 firstUC.init();
 
 const secondUC = new UC("#slider-2", {
   maxSlidesShown: 3,
-  continuousLoop: true,
 });
 secondUC.init();

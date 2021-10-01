@@ -6,4 +6,6 @@
 
 ### - Slides scrolled per click option
 
-### - Show/hide indicators
+### - Error/Warning Handling
+
+### - Possibly exclude options that are not relevant due to other options
