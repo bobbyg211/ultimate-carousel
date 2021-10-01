@@ -2,7 +2,7 @@
 
 ## To-Do
 
-### - Auto slide/delay options
+### - ~Auto slide options~
 
 ### - Adjust slide sizes on screen resize
 

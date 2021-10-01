@@ -3,12 +3,19 @@ const UC = function (element, options) {
     ...options,
 
     animationSpeed: options.animationSpeed || 500, // milliseconds
-    autoSlide: options.autoSlide ? true : false,
+    autoSlide: options.autoSlide && !options.continuousLoop ? true : false,
     autoSlideDelay: options.autoSlideDelay || 2000,
-    autoSlideOnHover: options.autoSlideOnHover ? true : false,
+    continuousLoop: options.continuousLoop ? true : false,
+    continuousSpeed: options.continuousSpeed || 5, // scale 1-10
     infiniteLoop:
-      options.infiniteLoop === undefined || options.infiniteLoop ? true : false,
+      options.infiniteLoop === undefined ||
+      options.infiniteLoop ||
+      options.continuousLoop ||
+      options.autoSlide
+        ? true
+        : false,
     maxSlidesShown: options.maxSlidesShown || 1,
+    stopOnHover: options.stopOnHover ? true : false,
   };
 
   function restructureHTML() {
@@ -42,11 +49,16 @@ const UC = function (element, options) {
         ".uc--slide:nth-last-child(-n+" + options.maxSlidesShown + ")"
       );
 
-      slider.el
-        .find(".uc--scroll-area")
-        .prepend(
-          slider.lastSlides.clone().removeClass("real").addClass("copy before")
-        );
+      if (!options.continuousLoop) {
+        slider.el
+          .find(".uc--scroll-area")
+          .prepend(
+            slider.lastSlides
+              .clone()
+              .removeClass("real")
+              .addClass("copy before")
+          );
+      }
 
       slider.el
         .find(".uc--scroll-area")
@@ -56,7 +68,8 @@ const UC = function (element, options) {
     }
 
     // Add arrows and dots
-    let indicators = `
+    if (!options.continuousLoop) {
+      let indicators = `
     <div class="uc--indicators">
       <button class="uc--scroll-right uc--arrow">
         <img
@@ -77,12 +90,13 @@ const UC = function (element, options) {
     </div>
     `;
 
-    slider.el.append(indicators);
+      slider.el.append(indicators);
 
-    for (let i = 0; i < slider.el.find(".uc--slide.real").length; i++) {
-      slider.el
-        .find(".uc--slider-indics")
-        .append("<span class='uc--dot'></span>");
+      for (let i = 0; i < slider.el.find(".uc--slide.real").length; i++) {
+        slider.el
+          .find(".uc--slider-indics")
+          .append("<span class='uc--dot'></span>");
+      }
     }
   }
 
@@ -118,16 +132,15 @@ const UC = function (element, options) {
     slider.scrollWidth = slider.el.find(".uc--scroll-area")[0].scrollWidth;
     slider.clientWidth = slider.el.find(".uc--scroll-area")[0].clientWidth;
     slider.slideWidth = slider.el.find(".uc--slide.real").outerWidth();
+    slider.numChildren = slider.el.find(".uc--slide").length;
     slider.numRealChildren = slider.el.find(".uc--slide.real").length;
-    slider.numVisBeforeChildren = slider.el.find(
-      ".uc--slide.before:visible"
-    ).length;
+    slider.numBeforeChildren = slider.el.find(".uc--slide.before").length;
 
     slider.counter = 0;
 
     // RESPONSIVE variables
     slider.scrollDist = slider.scrollWidth - slider.clientWidth;
-    slider.startingPos = slider.slideWidth * slider.numVisBeforeChildren;
+    slider.startingPos = slider.slideWidth * slider.numBeforeChildren;
     slider.endingPos = slider.scrollDist - slider.slideWidth;
     slider.dotActiveWidth =
       8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
@@ -243,48 +256,84 @@ const UC = function (element, options) {
     }
   }
 
+  function infiniteScroll(slider) {
+    let speed =
+      ((slider.scrollDist - slider.scrollArea.scrollLeft()) /
+        (slider.slideWidth / options.maxSlidesShown)) *
+      1000 *
+      (11 - options.continuousSpeed);
+
+    slider.scrollArea.animate(
+      {
+        scrollLeft: slider.scrollDist,
+      },
+      speed,
+      "linear",
+      function () {
+        slider.scrollArea.scrollLeft(0);
+        infiniteScroll(slider);
+      }
+    );
+  }
+
   function initIndics(slider) {
-    // Initial positioning
-    slider.scrollArea.scrollLeft(slider.startingPos);
-    slider.activeDots.width(slider.dotActiveWidth);
-    slider.leadingDot.css("left", slider.sliderIndicsWidth + "px");
+    if (!options.continuousLoop) {
+      console.log("onebyone");
 
-    // Scroll on click
-    slider.arrows.click(function () {
-      if ($(this).hasClass("uc--scroll-right")) {
-        scrollActions(slider, true);
-      } else {
-        scrollActions(slider, false);
-      }
+      // Initial positioning
+      slider.scrollArea.scrollLeft(slider.startingPos);
+      slider.activeDots.width(slider.dotActiveWidth);
+      slider.leadingDot.css("left", slider.sliderIndicsWidth + "px");
 
-      // Stop auto slide on arrow click
+      // Scroll on click
+      slider.arrows.click(function () {
+        if ($(this).hasClass("uc--scroll-right")) {
+          scrollActions(slider, true);
+        } else {
+          scrollActions(slider, false);
+        }
+
+        // Stop auto slide on arrow click
+        if (options.autoSlide) {
+          clearInterval(scrollInterval);
+          scrollInterval = setInterval(function () {
+            scrollActions(slider, true);
+          }, options.autoSlideDelay);
+        }
+      });
+
+      // Auto slide
+      let scrollInterval;
       if (options.autoSlide) {
-        clearInterval(scrollInterval);
         scrollInterval = setInterval(function () {
           scrollActions(slider, true);
         }, options.autoSlideDelay);
       }
-    });
 
-    // Auto slide
-    let scrollInterval;
-    if (options.autoSlide) {
-      scrollInterval = setInterval(function () {
-        scrollActions(slider, true);
-      }, options.autoSlideDelay);
-    }
+      // Stop auto slide on hover
+      if (options.autoSlide && options.stopOnHover) {
+        slider.el.mouseover(function () {
+          clearInterval(scrollInterval);
+        });
 
-    // Stop auto slide on hover
-    if (options.autoSlide && !options.autoSlideOnHover) {
-      slider.el.mouseover(function () {
-        clearInterval(scrollInterval);
-      });
+        slider.el.mouseleave(function () {
+          scrollInterval = setInterval(function () {
+            scrollActions(slider, true);
+          }, options.autoSlideDelay);
+        });
+      }
+    } else {
+      infiniteScroll(slider);
 
-      slider.el.mouseleave(function () {
-        scrollInterval = setInterval(function () {
-          scrollActions(slider, true);
-        }, options.autoSlideDelay);
-      });
+      if (options.stopOnHover) {
+        slider.el.mouseenter(function () {
+          slider.scrollArea.stop(true);
+        });
+
+        slider.el.mouseleave(function () {
+          infiniteScroll(slider);
+        });
+      }
     }
   }
 
@@ -302,13 +351,18 @@ const UC = function (element, options) {
 
 const firstUC = new UC("#slider-1", {
   infiniteLoop: true,
-  autoSlide: true,
-  maxSlidesShown: 3,
+  maxSlidesShown: 1,
+  continuousLoop: true,
+  stopOnHover: true,
+  continuousSpeed: 8,
 });
 firstUC.init();
 
 const secondUC = new UC("#slider-2", {
-  maxSlidesShown: 2,
-  infiniteLoop: false,
+  autoSlide: true,
+  maxSlidesShown: 1,
+  continuousLoop: true,
+  stopOnHover: true,
+  continuousSpeed: 8,
 });
 secondUC.init();
