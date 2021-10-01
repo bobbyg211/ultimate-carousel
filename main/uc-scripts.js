@@ -27,7 +27,7 @@ const UC = function (element, options) {
       !options.continuousLoop
         ? true
         : false,
-    stopOnHover: options.stopOnHover ? true : false,
+    stopOnHover: options.stopOnHover || options.continuousLoop ? true : false,
   };
 
   function restructureHTML() {
@@ -286,7 +286,7 @@ const UC = function (element, options) {
   function infiniteScroll(slider) {
     let speed =
       ((slider.scrollDist - slider.scrollArea.scrollLeft()) /
-        (slider.slideWidth / options.maxSlidesShown)) *
+        (slider.slideWidth * options.maxSlidesShown)) *
       1000 *
       (11 - options.continuousSpeed);
 
@@ -378,11 +378,12 @@ const firstUC = new UC("#slider-1", {
   infiniteLoop: false,
   maxSlidesShown: 1,
   navigationDirection: "one-way",
+  continuousLoop: true,
 });
 firstUC.init();
 
 const secondUC = new UC("#slider-2", {
-  maxSlidesShown: 1,
+  maxSlidesShown: 3,
   continuousLoop: true,
 });
 secondUC.init();
