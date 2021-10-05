@@ -656,16 +656,3 @@ const UC = function (element, options) {
     init: init,
   };
 };
-
-const firstUC = new UC("#slider-1", {
-  maxSlidesShown: 2,
-  continuousLoop: true,
-});
-firstUC.init();
-
-const secondUC = new UC("#slider-2", {
-  maxSlidesShown: 3,
-  autoSlide: true,
-  autoSlideDelay: 2000,
-});
-secondUC.init();
