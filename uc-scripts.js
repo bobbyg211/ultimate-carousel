@@ -1,4 +1,8 @@
-const UC = function (element, options) {
+function UC(element, options) {
+  const _ = this;
+
+  options = options || {};
+
   const validOpts = {
     ...options,
 
@@ -655,17 +659,10 @@ const UC = function (element, options) {
   return {
     init: init,
   };
-};
+}
 
-const firstUC = new UC("#slider-1", {
-  maxSlidesShown: 2,
-  continuousLoop: true,
-});
+const firstUC = UC("#slider-1");
 firstUC.init();
 
-const secondUC = new UC("#slider-2", {
-  maxSlidesShown: 3,
-  autoSlide: true,
-  autoSlideDelay: 2000,
-});
+const secondUC = UC("#slider-2", { maxSlidesShown: 3 });
 secondUC.init();
