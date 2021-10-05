@@ -9,3 +9,11 @@
 ### - Error/Warning Handling
 
 ### - Possibly exclude options that are not relevant due to other options
+
+### - Option to Fade In/Out instead of slide
+
+### Space between slides
+
+## Errors
+
+### - slider breaks when animationSpeed and autoSlideDelay are the same. What will happen if autoSlideDelay is less than animationSpeed?

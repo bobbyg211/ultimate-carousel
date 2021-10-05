@@ -3,44 +3,126 @@ const UC = function (element, options) {
     ...options,
 
     animationSpeed: errorHandling("animationSpeed", options.animationSpeed), // milliseconds
-    autoSlide:
-      (options.autoSlide && !options.continuousLoop) ||
-      options.navigationDirection === "none"
-        ? true
-        : false,
-    autoSlideDelay: options.autoSlideDelay || 5000,
-    continuousLoop: options.continuousLoop ? true : false,
+    autoSlide: errorHandling("autoSlide", options.autoSlide),
+    autoSlideDelay: errorHandling("autoSlideDelay", options.autoSlideDelay),
+    continuousLoop: errorHandling("continuousLoop", options.continuousLoop),
     continuousSpeed: errorHandling("continuousSpeed", options.continuousSpeed), // scale 1-10
     infiniteLoop: errorHandling("infiniteLoop", options.infiniteLoop),
-    maxSlidesShown: options.maxSlidesShown || 1,
+    maxSlidesShown: errorHandling("maxSlidesShown", options.maxSlidesShown),
     navigationDirection: errorHandling(
       "navigationDirection",
       options.navigationDirection
     ), // "two-way", "one-way", "none"
-    showIndicatorDots:
-      (options.showIndicatorDots === undefined || options.showIndicatorDots) &&
-      !options.continuousLoop
-        ? true
-        : false,
-    stopOnHover:
-      ((options.stopOnHover === undefined || options.stopOnHover) &&
-        options.continuousLoop) ||
-      options.autoSlide
-        ? true
-        : false,
+    showIndicatorDots: errorHandling(
+      "showIndicatorDots",
+      options.showIndicatorDots
+    ),
+    stopOnHover: errorHandling("stopOnHover", options.stopOnHover),
   };
 
   function errorHandling(option, value) {
     // Animation Speed
     if (option === "animationSpeed") {
       if ((typeof value === "number" && value > 0) || value === undefined) {
+        // Warnings
+        if (options.animationSpeed !== undefined) {
+          if (options.continuousLoop) {
+            console.warn(
+              `Redundant Declaration '${value}': animationSpeed will have no effect because continuousLoop is set to TRUE.`
+            );
+          }
+        }
+
+        // Return value
         return options.animationSpeed || 500;
       } else {
-        let err = new Error(
-          `animationSpeed value must be a number greater than 0.`
-        );
-        err.name = `Invalid Value '${value}'`;
-        throw err;
+        // Errors
+        if (typeof value !== "number") {
+          let err = new Error(`animationSpeed value must be of type 'number'.`);
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        } else {
+          let err = new Error(`animationSpeed must be greater than 0.`);
+          err.name = `Invalid Value '${value}'`;
+          throw err;
+        }
+      }
+    }
+
+    // Auto Slide
+    if (option === "autoSlide") {
+      if (typeof value === "boolean" || value === undefined) {
+        // Warnings
+        if (options.autoSlide !== undefined) {
+          if (options.continuousLoop) {
+            console.warn(
+              `Redundant Declaration '${value}': autoSlide will have no effect because continuousLoop is set to TRUE.`
+            );
+          }
+          if (options.navigationDirection) {
+            console.warn(
+              `Redundant Declaration '${value}': autoSlide TRUE is required because navigationDirection is set to 'none'.`
+            );
+            return true;
+          }
+        }
+
+        // Return value
+        return options.autoSlide || false;
+      } else {
+        // Errors
+        if (typeof value !== "boolean") {
+          let err = new Error(`autoSlide value must be of type 'boolean'.`);
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        }
+      }
+    }
+
+    // Auto Slide Delay
+    if (option === "autoSlideDelay") {
+      if ((typeof value === "number" && value > 0) || value === undefined) {
+        // Warnings
+        if (options.autoSlideDelay !== undefined) {
+          if (options.continuousLoop) {
+            console.warn(
+              `Redundant Declaration '${value}': autoSlideDelay will have no effect because continuousLoop is set to TRUE.`
+            );
+          }
+        }
+
+        // Return value
+        return options.autoSlideDelay || 5000;
+      } else {
+        // Errors
+        if (typeof value !== "number") {
+          let err = new Error(`autoSlideDelay value must be of type 'number'.`);
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        } else {
+          let err = new Error(`autoSlideDelay must be greater than 0.`);
+          err.name = `Invalid Value '${value}'`;
+          throw err;
+        }
+      }
+    }
+
+    // Continuous Loop
+    if (option === "continuousLoop") {
+      if (typeof value === "boolean" || value === undefined) {
+        // NO Warnings
+
+        // Return value
+        return options.continuousLoop || false;
+      } else {
+        // Errors
+        if (typeof value !== "boolean") {
+          let err = new Error(
+            `continuousLoop value must be of type 'boolean'.`
+          );
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        }
       }
     }
 
@@ -50,83 +132,183 @@ const UC = function (element, options) {
         (typeof value === "number" && value >= 1 && value <= 10) ||
         value === undefined
       ) {
+        // Warnings
+        if (options.continuousSpeed !== undefined) {
+          if (!options.continuousLoop) {
+            console.warn(
+              `Redundant Declaration '${value}': continuousSpeed will have no effect because continuousLoop is set to FALSE.`
+            );
+          }
+        }
+
+        //Return value
         return value || 5;
       } else {
-        let err = new Error(
-          `continuousSpeed value must be a number from 1-10.`
-        );
-        err.name = `Invalid Value '${value}'`;
-        throw err;
+        // Errors
+        if (typeof value !== "number") {
+          let err = new Error(
+            `continuousSpeed value must be of type 'number'.`
+          );
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        } else {
+          let err = new Error(`continuousSpeed must be between 1-10.`);
+          err.name = `Invalid Value '${value}'`;
+          throw err;
+        }
       }
     }
 
     // Infinite Loop
     if (option === "infiniteLoop") {
-      if (
-        options.infiniteLoop === undefined ||
-        options.infiniteLoop ||
-        options.continuousLoop ||
-        options.autoSlide ||
-        options.navigationDirection === "one-way" ||
-        options.navigationDirection === "none"
-      ) {
+      if (typeof value === "boolean" || options.infiniteLoop === undefined) {
         if (options.infiniteLoop !== undefined) {
-          if (options.continuousLoop) {
-            console.warn(
-              "Warning: Setting a value for infiniteLoop will have no effect because continuousLoop is set to TRUE."
-            );
-          }
-
           if (options.autoSlide) {
             console.warn(
-              "Warning: Setting a value for infiniteLoop will have no effect because autoSlide is set to TRUE."
+              `Redundant Declaration '${value}': infiniteLoop TRUE is required because autoSlide is set to TRUE.`
             );
+            return true;
           }
-
-          if (options.navigationDirection === "one-way") {
+          if (options.continuousLoop) {
             console.warn(
-              "Warning: Setting a value for infiniteLoop will have no effect because navigationDirection is set to 'one-way'."
+              `Redundant Declaration '${value}': infiniteLoop TRUE is required because continuousLoop is set to TRUE.`
             );
-          }
-
-          if (options.navigationDirection === "none") {
-            console.warn(
-              "Warning: Setting a value for infiniteLoop will have no effect because navigationDirection is set to 'none'."
-            );
+            return true;
           }
         }
 
-        return true;
+        // Return Value
+        if (options.infiniteLoop || options.infiniteLoop === undefined) {
+          return true;
+        } else {
+          return false;
+        }
       } else {
-        return false;
+        if (typeof value !== "number") {
+          let err = new Error(
+            `continuousSpeed value must be of type 'number'.`
+          );
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        }
+      }
+    }
+
+    // maxSlidesShown
+    if (option === "maxSlidesShown") {
+      if ((typeof value === "number" && value > 0) || value === undefined) {
+        // Warnings
+        // NONE
+
+        //Return value
+        return value || 1;
+      } else {
+        // Errors
+        if (typeof value !== "number") {
+          let err = new Error(`maxSlidesShown value must be of type 'number'.`);
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        } else {
+          let err = new Error(`maxSlidesShown must be greater than 0.`);
+          err.name = `Invalid Value '${value}'`;
+          throw err;
+        }
       }
     }
 
     // Navigation Direction
     if (option === "navigationDirection") {
       if (
+        options.navigationDirection === undefined ||
         (typeof options.navigationDirection === "string" &&
           (options.navigationDirection === "two-way" ||
             options.navigationDirection === "one-way" ||
-            options.navigationDirection === "none")) ||
-        options.navigationDirection === undefined
+            options.navigationDirection === "none"))
       ) {
-        if (
-          options.continuousLoop &&
-          options.navigationDirection !== undefined
-        ) {
-          console.warn(
-            "Warning: Setting a value for navigationDirection will have no effect here because continuousLoop is set to TRUE."
-          );
+        if (options.navigationDirection !== undefined) {
+          if (options.infiniteLoop) {
+            console.warn(
+              `Redundant Declaration '${value}': navigationDirection 'two-way' is required because infiniteLoop is set to FALSE.`
+            );
+            return "two-way";
+          }
+          if (options.continuousLoop) {
+            console.warn(
+              `Redundant Declaration '${value}': navigationDirection 'none' is required because continuousLoop is set to TRUE.`
+            );
+            return "none";
+          }
         }
 
         return options.navigationDirection || "two-way";
       } else {
-        let err = new Error(
-          `navigationDirection value must be "two-way", "one-way", or "none".`
-        );
-        err.name = `Invalid Value '${value}'`;
-        throw err;
+        // Errors
+        if (typeof value !== "string") {
+          let err = new Error(
+            `navigationDirection value must be of type 'string'.`
+          );
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        } else {
+          let err = new Error(
+            `navigationDirection must be 'two-way', 'one-way', or 'none'.`
+          );
+          err.name = `Invalid Value '${value}'`;
+          throw err;
+        }
+      }
+    }
+
+    // Show Indicator Dots
+    if (option === "showIndicatorDots") {
+      if (
+        typeof value === "boolean" ||
+        options.showIndicatorDots === undefined
+      ) {
+        if (options.showIndicatorDots !== undefined) {
+          if (options.continuousLoop) {
+            console.warn(
+              `Redundant Declaration '${value}': showIndicatorDots FALSE is required because continuousLoop is set to TRUE.`
+            );
+            return false;
+          }
+        }
+
+        // Return Value
+        if (
+          options.showIndicatorDots ||
+          options.showIndicatorDots === undefined
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        if (typeof value !== "boolean") {
+          let err = new Error(
+            `showIndicatorDots value must be of type 'boolean'.`
+          );
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        }
+      }
+    }
+
+    // Stop On Hover
+    if (option === "stopOnHover") {
+      if (typeof value === "boolean" || options.stopOnHover === undefined) {
+        // Return Value
+        if (options.stopOnHover || options.stopOnHover === undefined) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        if (typeof value !== "boolean") {
+          let err = new Error(`stopOnHover value must be of type 'boolean'.`);
+          err.name = `Invalid Type '${typeof value}'`;
+          throw err;
+        }
       }
     }
   }
@@ -476,15 +658,14 @@ const UC = function (element, options) {
 };
 
 const firstUC = new UC("#slider-1", {
-  infiniteLoop: false,
-  maxSlidesShown: 1,
-  navigationDirection: "one-way",
+  maxSlidesShown: 2,
   continuousLoop: true,
-  continuousSpeed: 4,
 });
 firstUC.init();
 
 const secondUC = new UC("#slider-2", {
   maxSlidesShown: 3,
+  autoSlide: true,
+  autoSlideDelay: 2000,
 });
 secondUC.init();

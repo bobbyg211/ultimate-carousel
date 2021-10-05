@@ -18,8 +18,6 @@
 
 ### Invalid Type: autoSlide must be of type boolean.
 
-### Invalid Value: autoSlide must be TRUE or FALSE.
-
 ## Warnings
 
 ### Redundant Declaration: autoSlide will have no effect because continuousLoop is set to TRUE.
@@ -48,8 +46,6 @@
 
 ### Invalid Type: continuousLoop must be of type boolean.
 
-### Invalid Value: continuousLoop must be TRUE or FALSE.
-
 ## Warnings
 
 ### NONE
@@ -62,11 +58,11 @@
 
 ### Invalid Type: continuousSpeed must be of type number.
 
-### Invalid Value: continuousSpeed must be greater than 0.
+### Invalid Value: continuousSpeed must be between 1-10.
 
 ## Warnings
 
-### Redundant Declaration: continuousSpeed will have no effect because continuousSpeed is set to FALSE.
+### Redundant Declaration: continuousSpeed will have no effect because continuousLoop is set to FALSE.
 
 <br />
 
@@ -76,8 +72,6 @@
 
 ### Invalid Type: infiniteLoop must be of type boolean.
 
-### Invalid Value: infiniteLoop must be TRUE or FALSE.
-
 ## Warnings
 
 ### Redundant Declaration: infiniteLoop TRUE is required because autoSlide is set to TRUE.
@@ -86,7 +80,7 @@
 
 <br />
 
-#### **NOTE: infiniteLoop value will take precedence over navigationDirection values and so warning related to their relationship will nto be shown here.**
+#### **NOTE: infiniteLoop value will take precedence over navigationDirection values and so warnings related to their relationship will not be shown here.**
 
 <br />
 
@@ -130,8 +124,6 @@
 
 ### Invalid Type: showIndicatorDots must be of type boolean.
 
-### Invalid Value: showIndicatorDots must be TRUE or FALSE.
-
 ## Warnings
 
 ### Redundant Declaration: showIndicatorDots FALSE is required because continuousLoop is set to TRUE.
@@ -144,14 +136,12 @@
 
 ### Invalid Type: stopOnHover must be of type boolean.
 
-### Invalid Value: stopOnHover must be TRUE or FALSE.
-
 ## Warnings
 
 ### NONE
 
 <br />
 
-#### **NOTE: stopOnHover will take effect, regardless of the value for continuousLoop. Default value will be TRUE for continuousLoop and autoSlide. Otherwise, FALSE**
+#### **NOTE: stopOnHover will take effect, regardless of the value for continuousLoop. Default value will be TRUE for continuousLoop and autoSlide. Otherwise, FALSE.**
 
 <br />
