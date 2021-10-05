@@ -6,13 +6,13 @@
 
 ### - Slides scrolled per click option
 
-### - Error/Warning Handling
+### - ~Error/Warning Handling~
 
 ### - Possibly exclude options that are not relevant due to other options
 
 ### - Option to Fade In/Out instead of slide
 
-### Space between slides
+### - Space between slides
 
 ## Errors
 
