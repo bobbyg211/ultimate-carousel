@@ -6,7 +6,9 @@
 
 ### - Slides scrolled per click option
 
-### - ~Error/Warning Handling~
+### - ~Error Handling~
+
+### - Complete Warning Handling
 
 ### - Possibly exclude options that are not relevant due to other options
 
