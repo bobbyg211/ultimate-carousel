@@ -44,7 +44,7 @@
   left: 0;
 }
 
-.uc--wrapper .uc--indicators .uc--slider-indics {
+.uc--wrapper .uc--indicators .uc--dots {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -57,15 +57,15 @@
   /* border-radius: 100px; */
 }
 
-/* .uc--wrapper .uc--indicators .uc--slider-indics .uc--dot:nth-child(3) {
+/* .uc--wrapper .uc--indicators .uc--dots .uc--dot:nth-child(3) {
   margin-left: 0;
 }
 
-.uc--wrapper .uc--indicators .uc--slider-indics .uc--dot:last-child {
+.uc--wrapper .uc--indicators .uc--dots .uc--dot:last-child {
   margin-right: 0;
 } */
 
-.uc--wrapper .uc--indicators .uc--slider-indics .uc--dot {
+.uc--wrapper .uc--indicators .uc--dots .uc--dot {
   display: block;
   width: 8px;
   height: 8px;
@@ -74,7 +74,7 @@
   background: #c4c4c4;
 }
 
-.uc--wrapper .uc--indicators .uc--slider-indics .uc--dot.active {
+.uc--wrapper .uc--indicators .uc--dots .uc--dot.active {
   background: #1ca39c;
   opacity: 0.5;
   position: absolute;

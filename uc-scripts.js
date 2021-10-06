@@ -1,7 +1,16 @@
-const UC = (element, options) => {
-  const _ = this;
+const UC = (element, settings) => {
+  // GLOBAL variables
+  settings = settings || {};
+  const _this = this;
+  _this._ = {};
+  const { _ } = _this;
+  _.carousel = {};
+  const { carousel } = _;
+  carousel.el = $(element);
 
-  _.defaults = {
+  // Options setup & validation
+
+  defaults = {
     animationSpeed: 500,
     autoSlide: false,
     autoSlideDelay: 3000,
@@ -14,45 +23,21 @@ const UC = (element, options) => {
     stopOnHover: true,
   };
 
-  _.options = optValidation(options);
-  _.required = optRequirements(options);
+  validated = optValidation(settings);
+  required = optRequirements(validated);
 
-  function errorHandler(option, type, array, min, max) {
-    let [key, value] = option;
-    array = array || [];
+  _.options = {
+    ...defaults,
+    ...validated,
+    ...required,
+  };
 
-    // WRONG TYPE
-    if (typeof value !== type) {
-      let err = new Error(`${key} value must be of type '${type}'.`);
-      err.name = `Invalid Type '${typeof value}'`;
-      throw err;
-    }
+  const { options } = _;
 
-    // BAD VALUE 'number'
-    if (value < min || value > max) {
-      let err = new Error(
-        `${key} must be ${
-          max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`
-        }.`
-      );
-      err.name = `Invalid Value '${key}: ${value}'`;
-      throw err;
-    }
-
-    // BAD VALUE 'string'
-    if (!array.includes(value)) {
-      let err = new Error(
-        `${key} must be one of the following values: '${array}'.`
-      );
-      err.name = `Invalid Value '${key}: ${value}'`;
-      throw err;
-    }
-  }
-
-  function optValidation(options) {
+  function optValidation(optObj) {
     let validOpts = {};
 
-    Object.entries(options).forEach((option) => {
+    Object.entries(optObj).forEach((option) => {
       let [key, value] = option;
 
       // Animation Speed
@@ -153,10 +138,10 @@ const UC = (element, options) => {
     return validOpts;
   }
 
-  function optRequirements(options) {
+  function optRequirements(optObj) {
     let requiredOpts = {};
 
-    Object.entries(options).forEach((option) => {
+    Object.entries(optObj).forEach((option) => {
       let [key, value] = option;
 
       // Animation Speed
@@ -166,7 +151,7 @@ const UC = (element, options) => {
 
       // Auto Slide
       if (key === "autoSlide") {
-        if (_.options.navigationDirection === "none") {
+        if (optObj.navigationDirection === "none") {
           requiredOpts[key] = true;
         }
       }
@@ -188,7 +173,7 @@ const UC = (element, options) => {
 
       // Infinite Loop
       if (key === "infiniteLoop") {
-        if (_.options.autoSlide || _.options.continuousLoop) {
+        if (optObj.autoSlide || optObj.continuousLoop) {
           requiredOpts[key] = true;
         }
       }
@@ -200,16 +185,16 @@ const UC = (element, options) => {
 
       // Navigation Direction
       if (key === "navigationDirection") {
-        if (_.options.continuousLoop) {
+        if (optObj.continuousLoop) {
           requiredOpts[key] = "none";
-        } else if (_.options.infiniteLoop === false) {
+        } else if (optObj.infiniteLoop === false) {
           requiredOpts[key] = "two-way";
         }
       }
 
       // Show Indicator Dots
       if (key === "showIndicatorDots") {
-        if (_.options.continuousLoop) {
+        if (optObj.continuousLoop) {
           requiredOpts[key] = false;
         }
       }
@@ -223,28 +208,49 @@ const UC = (element, options) => {
     return requiredOpts;
   }
 
-  options = {
-    ..._.defaults,
-    ..._.options,
-    ..._.required,
-  };
+  function errorHandler(option, type, array, min, max) {
+    let [key, value] = option;
+    array = array || [];
 
-  function restructureHTML() {
-    console.log(options);
+    // WRONG TYPE
+    if (typeof value !== type) {
+      let err = new Error(`${key} value must be of type '${type}'.`);
+      err.name = `Invalid Type '${typeof value}'`;
+      throw err;
+    }
 
-    let slider = {};
+    // BAD VALUE 'number'
+    if (value < min || value > max) {
+      let err = new Error(
+        `${key} must be ${
+          max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`
+        }.`
+      );
+      err.name = `Invalid Value '${key}: ${value}'`;
+      throw err;
+    }
 
-    // Adjust main wrappers
-    slider.el = $(element);
+    // BAD VALUE 'string'
+    if (!array.includes(value)) {
+      let err = new Error(
+        `${key} must be one of the following values: '${array}'.`
+      );
+      err.name = `Invalid Value '${key}: ${value}'`;
+      throw err;
+    }
+  }
 
-    slider.el.addClass("uc--wrapper");
-    let html = slider.el.html();
-    slider.el.empty();
-    slider.el.append("<div class='uc--scroll-area'>" + html + "</div>");
-    slider.el.find(".uc--scroll-area > *").addClass("uc--slide real");
+  // Create Carousel
+
+  function createCarousel() {
+    carousel.el.addClass("uc--wrapper");
+    let html = carousel.el.html();
+    carousel.el.empty();
+    carousel.el.append("<div class='uc--scroll-area'>" + html + "</div>");
+    carousel.el.find(".uc--scroll-area > *").addClass("uc--slide real");
 
     // Wrap all content in "Content" DIV
-    let slides = slider.el.find(".uc--slide");
+    let slides = carousel.el.find(".uc--slide");
     $(slides).each(function () {
       let html = $(this).html();
       $(this).empty();
@@ -253,28 +259,31 @@ const UC = (element, options) => {
 
     // Add slide copies
     if (options.infiniteLoop) {
-      slider.firstSlides = slider.el.find(
+      carousel.firstSlides = carousel.el.find(
         ".uc--slide:nth-child(-n+" + options.maxSlidesShown + ")"
       );
-      slider.lastSlides = slider.el.find(
+      carousel.lastSlides = carousel.el.find(
         ".uc--slide:nth-last-child(-n+" + options.maxSlidesShown + ")"
       );
 
       if (!options.continuousLoop) {
-        slider.el
+        carousel.el
           .find(".uc--scroll-area")
           .prepend(
-            slider.lastSlides
+            carousel.lastSlides
               .clone()
               .removeClass("real")
               .addClass("copy before")
           );
       }
 
-      slider.el
+      carousel.el
         .find(".uc--scroll-area")
         .append(
-          slider.firstSlides.clone().removeClass("real").addClass("copy after")
+          carousel.firstSlides
+            .clone()
+            .removeClass("real")
+            .addClass("copy after")
         );
     }
 
@@ -306,7 +315,7 @@ const UC = (element, options) => {
       
       ${
         options.showIndicatorDots
-          ? `<div class="uc--slider-indics">
+          ? `<div class="uc--dots">
       <span class="uc--dot active trailing"></span>
       <span class="uc--dot active leading"></span>
     </div>`
@@ -316,212 +325,73 @@ const UC = (element, options) => {
     </div>
     `;
 
-      slider.el.append(indicators);
+      carousel.el.append(indicators);
 
-      for (let i = 0; i < slider.el.find(".uc--slide.real").length; i++) {
-        slider.el
-          .find(".uc--slider-indics")
-          .append("<span class='uc--dot'></span>");
+      for (let i = 0; i < carousel.el.find(".uc--slide.real").length; i++) {
+        carousel.el.find(".uc--dots").append("<span class='uc--dot'></span>");
       }
     }
-  }
-
-  function applyLayout() {
-    let slider = {};
-
-    slider.el = $(element);
 
     if (options.maxSlidesShown) {
-      slider.el
+      carousel.el
         .find(".uc--slide")
         .css("flex-basis", `${100 / options.maxSlidesShown}%`);
     }
-  }
 
-  function initVars() {
-    const slider = {};
+    carousel.scrollArea = carousel.el.find(".uc--scroll-area");
 
-    // GLOBAL variables
-    slider.el = $(element);
+    carousel.arrows = carousel.el.find(".uc--arrow");
+    carousel.rightArrow = carousel.el.find(".uc--scroll-right");
+    carousel.leftArrow = carousel.el.find(".uc--scroll-left");
 
-    slider.scrollArea = slider.el.find(".uc--scroll-area");
+    carousel.carouselIndicsWidth = carousel.el.find(".uc--dots").width();
+    carousel.activeDots = carousel.el.find(".uc--dot.active");
+    carousel.leadingDot = carousel.el.find(".uc--dot.active.leading");
+    carousel.trailingDot = carousel.el.find(".uc--dot.active.trailing");
 
-    slider.arrows = slider.el.find(".uc--arrow");
-    slider.rightArrow = slider.el.find(".uc--scroll-right");
-    slider.leftArrow = slider.el.find(".uc--scroll-left");
+    carousel.scrollWidth = carousel.el.find(".uc--scroll-area")[0].scrollWidth;
+    carousel.clientWidth = carousel.el.find(".uc--scroll-area")[0].clientWidth;
+    carousel.slideWidth = carousel.el.find(".uc--slide.real").outerWidth();
+    carousel.numChildren = carousel.el.find(".uc--slide").length;
+    carousel.numRealChildren = carousel.el.find(".uc--slide.real").length;
+    carousel.numBeforeChildren = carousel.el.find(".uc--slide.before").length;
 
-    slider.sliderIndicsWidth = slider.el.find(".uc--slider-indics").width();
-    slider.activeDots = slider.el.find(".uc--dot.active");
-    slider.leadingDot = slider.el.find(".uc--dot.active.leading");
-    slider.trailingDot = slider.el.find(".uc--dot.active.trailing");
+    carousel.counter = 0;
 
-    slider.scrollWidth = slider.el.find(".uc--scroll-area")[0].scrollWidth;
-    slider.clientWidth = slider.el.find(".uc--scroll-area")[0].clientWidth;
-    slider.slideWidth = slider.el.find(".uc--slide.real").outerWidth();
-    slider.numChildren = slider.el.find(".uc--slide").length;
-    slider.numRealChildren = slider.el.find(".uc--slide.real").length;
-    slider.numBeforeChildren = slider.el.find(".uc--slide.before").length;
-
-    slider.counter = 0;
-
-    // RESPONSIVE variables
-    slider.scrollDist = slider.scrollWidth - slider.clientWidth;
-    slider.startingPos = slider.slideWidth * slider.numBeforeChildren;
-    slider.endingPos = slider.scrollDist - slider.slideWidth;
-    slider.dotActiveWidth =
+    carousel.scrollDist = carousel.scrollWidth - carousel.clientWidth;
+    carousel.startingPos = carousel.slideWidth * carousel.numBeforeChildren;
+    carousel.endingPos = carousel.scrollDist - carousel.slideWidth;
+    carousel.dotActiveWidth =
       8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
 
-    // DEPENDANT variables
-    slider.max = options.infiniteLoop
-      ? slider.numRealChildren
-      : slider.numRealChildren - options.maxSlidesShown;
-    slider.indicEndpoint = 8 * slider.max + 8 * 3;
-    slider.speed = options.animationSpeed;
-    slider.halfspeed = slider.speed / 2;
-
-    return slider;
+    carousel.max = options.infiniteLoop
+      ? carousel.numRealChildren
+      : carousel.numRealChildren - options.maxSlidesShown;
+    carousel.indicEndpoint = 8 * carousel.max + 8 * 3;
+    carousel.speed = options.animationSpeed;
+    carousel.halfSpeed = carousel.speed / 2;
   }
 
-  function scrollActions(slider, direction) {
-    if (
-      options.infiniteLoop ||
-      (!options.infiniteLoop &&
-        ((direction && slider.counter !== slider.max) ||
-          (!direction && slider.counter !== 0)))
-    ) {
-      slider.rightArrow.css("pointer-events", "none");
-      slider.leftArrow.css("pointer-events", "none");
-
-      let edge, pos, reset;
-
-      if (direction) {
-        edge = slider.max;
-        reset = 0;
-        pos = slider.startingPos;
-      } else {
-        edge = 0;
-        reset = slider.max;
-        pos = slider.endingPos;
-      }
-
-      slider.scrollArea.animate(
-        {
-          scrollLeft: `${direction ? "+" : "-"}=${slider.slideWidth}`,
-        },
-        slider.speed
-      );
-
-      slider.activeDots
-        .animate(
-          {
-            width: slider.dotActiveWidth + 16,
-            marginLeft: `${direction ? "+=0px" : "-=16px"}`,
-          },
-          slider.halfspeed
-        )
-        .promise()
-        .then(function () {
-          slider.activeDots
-            .animate(
-              {
-                width: slider.dotActiveWidth,
-                left: `${direction ? "+=16px" : "-=0"}`,
-              },
-              slider.halfspeed
-            )
-            .promise()
-            .then(function () {
-              if (direction && slider.counter !== slider.max) {
-                slider.counter++;
-              }
-
-              if (!direction) {
-                slider.activeDots.css("margin-left", "5px");
-                const leadLeftPos = parseInt(
-                    $(slider.leadingDot).css("left"),
-                    10
-                  ),
-                  trailLeftPos = parseInt(
-                    $(slider.trailingDot).css("left"),
-                    10
-                  );
-                slider.leadingDot.css("left", leadLeftPos - 16 + "px");
-                slider.trailingDot.css("left", trailLeftPos - 16 + "px");
-              }
-
-              if (slider.counter === edge && options.infiniteLoop) {
-                slider.scrollArea.scrollLeft(pos);
-                slider.counter = reset;
-              }
-
-              slider.activeDots.each(function () {
-                if (
-                  parseInt($(this).css("left"), 10) ===
-                  slider.sliderIndicsWidth + 16
-                ) {
-                  $(this).css(
-                    "left",
-                    "-" + (slider.sliderIndicsWidth - 16) + "px"
-                  );
-                } else if (
-                  parseInt($(this).css("left"), 10) ===
-                  -slider.sliderIndicsWidth
-                ) {
-                  $(this).css("left", slider.sliderIndicsWidth + "px");
-                }
-              });
-
-              if (!direction && slider.counter !== 0) {
-                slider.counter--;
-              }
-
-              slider.rightArrow.css("pointer-events", "auto");
-              slider.leftArrow.css("pointer-events", "auto");
-            });
-        });
-    }
-  }
-
-  function infiniteScroll(slider) {
-    let speed =
-      ((slider.scrollDist - slider.scrollArea.scrollLeft()) /
-        (slider.slideWidth * options.maxSlidesShown)) *
-      1000 *
-      (11 - options.continuousSpeed);
-
-    slider.scrollArea.animate(
-      {
-        scrollLeft: slider.scrollDist,
-      },
-      speed,
-      "linear",
-      function () {
-        slider.scrollArea.scrollLeft(0);
-        infiniteScroll(slider);
-      }
-    );
-  }
-
-  function initIndics(slider) {
+  function initActions() {
     if (!options.continuousLoop) {
       // Initial positioning
-      slider.scrollArea.scrollLeft(slider.startingPos);
-      slider.activeDots.width(slider.dotActiveWidth);
-      slider.leadingDot.css("left", slider.sliderIndicsWidth + "px");
+      carousel.scrollArea.scrollLeft(carousel.startingPos);
+      carousel.activeDots.width(carousel.dotActiveWidth);
+      carousel.leadingDot.css("left", carousel.carouselIndicsWidth + "px");
 
       // Scroll on click
-      slider.arrows.click(function () {
+      carousel.arrows.click(function () {
         if ($(this).hasClass("uc--scroll-right")) {
-          scrollActions(slider, true);
+          scrollActions(true);
         } else {
-          scrollActions(slider, false);
+          scrollActions(false);
         }
 
         // Stop auto slide on arrow click
         if (options.autoSlide) {
           clearInterval(scrollInterval);
           scrollInterval = setInterval(function () {
-            scrollActions(slider, true);
+            scrollActions(true);
           }, options.autoSlideDelay);
         }
       });
@@ -530,45 +400,174 @@ const UC = (element, options) => {
       let scrollInterval;
       if (options.autoSlide) {
         scrollInterval = setInterval(function () {
-          scrollActions(slider, true);
+          scrollActions(true);
         }, options.autoSlideDelay);
       }
 
       // Stop auto slide on hover
       if (options.autoSlide && options.stopOnHover) {
-        slider.el.mouseover(function () {
+        carousel.el.mouseover(function () {
           clearInterval(scrollInterval);
         });
 
-        slider.el.mouseleave(function () {
+        carousel.el.mouseleave(function () {
           scrollInterval = setInterval(function () {
-            scrollActions(slider, true);
+            scrollActions(true);
           }, options.autoSlideDelay);
         });
       }
     } else {
-      infiniteScroll(slider);
+      infiniteScroll();
 
       if (options.stopOnHover) {
-        slider.el.mouseenter(function () {
-          slider.scrollArea.stop(true);
+        carousel.el.mouseenter(function () {
+          carousel.scrollArea.stop(true);
         });
 
-        slider.el.mouseleave(function () {
-          infiniteScroll(slider);
+        carousel.el.mouseleave(function () {
+          infiniteScroll();
         });
       }
     }
   }
 
+  // Scroll Functions
+
+  function scrollActions(direction) {
+    if (
+      options.infiniteLoop ||
+      (!options.infiniteLoop &&
+        ((direction && carousel.counter !== carousel.max) ||
+          (!direction && carousel.counter !== 0)))
+    ) {
+      carousel.rightArrow.css("pointer-events", "none");
+      carousel.leftArrow.css("pointer-events", "none");
+
+      let edge, pos, reset;
+
+      if (direction) {
+        edge = carousel.max;
+        reset = 0;
+        pos = carousel.startingPos;
+      } else {
+        edge = 0;
+        reset = carousel.max;
+        pos = carousel.endingPos;
+      }
+
+      carousel.scrollArea.animate(
+        {
+          scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
+        },
+        carousel.speed
+      );
+
+      console.log(carousel.halfSpeed);
+
+      carousel.activeDots
+        .animate(
+          {
+            width: carousel.dotActiveWidth + 16,
+            marginLeft: `${direction ? "+=0px" : "-=16px"}`,
+          },
+          carousel.halfSpeed
+        )
+        .promise()
+        .then(function () {
+          carousel.activeDots
+            .animate(
+              {
+                width: carousel.dotActiveWidth,
+                left: `${direction ? "+=16px" : "-=0"}`,
+              },
+              carousel.halfSpeed
+            )
+            .promise()
+            .then(function () {
+              if (direction && carousel.counter !== carousel.max) {
+                carousel.counter++;
+              }
+
+              if (!direction) {
+                carousel.activeDots.css("margin-left", "5px");
+                const leadLeftPos = parseInt(
+                    $(carousel.leadingDot).css("left"),
+                    10
+                  ),
+                  trailLeftPos = parseInt(
+                    $(carousel.trailingDot).css("left"),
+                    10
+                  );
+                carousel.leadingDot.css("left", leadLeftPos - 16 + "px");
+                carousel.trailingDot.css("left", trailLeftPos - 16 + "px");
+              }
+
+              if (carousel.counter === edge && options.infiniteLoop) {
+                carousel.scrollArea.scrollLeft(pos);
+                carousel.counter = reset;
+              }
+
+              carousel.activeDots.each(function () {
+                if (
+                  parseInt($(this).css("left"), 10) ===
+                  carousel.carouselIndicsWidth + 16
+                ) {
+                  $(this).css(
+                    "left",
+                    "-" + (carousel.carouselIndicsWidth - 16) + "px"
+                  );
+                } else if (
+                  parseInt($(this).css("left"), 10) ===
+                  -carousel.carouselIndicsWidth
+                ) {
+                  $(this).css("left", carousel.carouselIndicsWidth + "px");
+                }
+              });
+
+              if (!direction && carousel.counter !== 0) {
+                carousel.counter--;
+              }
+
+              carousel.rightArrow.css("pointer-events", "auto");
+              carousel.leftArrow.css("pointer-events", "auto");
+            });
+        });
+    }
+  }
+
+  function infiniteScroll() {
+    let speed =
+      ((carousel.scrollDist - carousel.scrollArea.scrollLeft()) /
+        (carousel.slideWidth * options.maxSlidesShown)) *
+      1000 *
+      (11 - options.continuousSpeed);
+
+    carousel.scrollArea.animate(
+      {
+        scrollLeft: carousel.scrollDist,
+      },
+      speed,
+      "linear",
+      function () {
+        carousel.scrollArea.scrollLeft(0);
+        infiniteScroll(carousel);
+      }
+    );
+  }
+
+  // Initialize
+
   function init() {
-    restructureHTML();
-    applyLayout();
-    let slider = initVars();
-    initIndics(slider);
+    createCarousel();
+    initActions();
+
+    console.log(_);
   }
 
   return {
     init: init,
   };
 };
+
+const c1 = UC("#slider-1");
+c1.init();
