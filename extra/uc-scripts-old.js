@@ -1,4 +1,8 @@
-const UC = function (element, options) {
+function UC(element, options) {
+  const _ = this;
+
+  options = options || {};
+
   const validOpts = {
     ...options,
 
@@ -655,4 +659,4 @@ const UC = function (element, options) {
   return {
     init: init,
   };
-};
+}
