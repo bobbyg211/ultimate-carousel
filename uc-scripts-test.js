@@ -15,35 +15,11 @@ const UC = (element, options) => {
   };
 
   _.options = optValidation(options);
+  _.required = optRequirements(options);
 
-  function warningHandler(option, noEffectKeys, requiredKeys) {
+  function errorHandler(option, type, array, min, max) {
     let [key, value] = option;
-    noEffectKeys = noEffectKeys || [];
-    requiredKeys = requiredKeys || [];
-
-    if (value !== undefined) {
-      // NO EFFECT
-      noEffectKeys.forEach((neKey) => {
-        if (options[neKey]) {
-          console.warn(
-            `Redundant Declaration '${key}: ${value}': ${key} will have no effect because ${neKey} is set to '${options[neKey]}'.`
-          );
-        }
-      });
-
-      // REQUIRED
-      requiredKeys.forEach((rKey) => {
-        if (options[rKey]) {
-          console.warn(
-            `Redundant Declaration '${key}: ${value}': ${key} TRUE is required because ${rKey} is set to '${options[rKey]}'.`
-          );
-        }
-      });
-    }
-  }
-
-  function errorHandler(option, type, min, max) {
-    let [key, value] = option;
+    array = array || [];
 
     // WRONG TYPE
     if (typeof value !== type) {
@@ -62,6 +38,15 @@ const UC = (element, options) => {
       err.name = `Invalid Value '${key}: ${value}'`;
       throw err;
     }
+
+    // BAD VALUE 'string'
+    if (!array.includes(value)) {
+      let err = new Error(
+        `${key} must be one of the following values: '${array}'.`
+      );
+      err.name = `Invalid Value '${key}: ${value}'`;
+      throw err;
+    }
   }
 
   function optValidation(options) {
@@ -73,17 +58,15 @@ const UC = (element, options) => {
       // Animation Speed
       if (key === "animationSpeed") {
         if ((typeof value === "number" && value > 0) || value === undefined) {
-          warningHandler(option, ["continuousLoop"], []);
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", 1, "infinity");
+          errorHandler(option, "number", [], 1, "infinity");
         }
       }
 
       // Auto Slide
       if (key === "autoSlide") {
         if (typeof value === "boolean" || value === undefined) {
-          warningHandler(option, ["continuousLoop"], []);
           validOpts[key] = value;
         } else {
           errorHandler(option, "boolean");
@@ -93,17 +76,15 @@ const UC = (element, options) => {
       // Auto Slide Delay
       if (key === "autoSlideDelay") {
         if ((typeof value === "number" && value > 0) || value === undefined) {
-          warningHandler(option, ["continuousLoop"], []);
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", 1, "infinity");
+          errorHandler(option, "number", [], 1, "infinity");
         }
       }
 
       // Continuous Loop
       if (key === "continuousLoop") {
         if (typeof value === "boolean" || value === undefined) {
-          warningHandler(option, [], []);
           validOpts[key] = value;
         } else {
           errorHandler(option, "boolean");
@@ -113,17 +94,15 @@ const UC = (element, options) => {
       // Continuous Speed -- FIX
       if (key === "continuousSpeed") {
         if ((typeof value === "number" && value > 0) || value === undefined) {
-          warningHandler(option, ["continuousLoop"], []);
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", 1, 10);
+          errorHandler(option, "number", [], 1, 10);
         }
       }
 
       // Infinite Loop
       if (key === "infiniteLoop") {
         if (typeof value === "boolean" || value === undefined) {
-          warningHandler(option, [], ["autoSlide", "continuousLoop"]);
           validOpts[key] = value;
         } else {
           errorHandler(option, "boolean");
@@ -133,60 +112,28 @@ const UC = (element, options) => {
       // maxSlidesShown
       if (key === "maxSlidesShown") {
         if ((typeof value === "number" && value > 0) || value === undefined) {
-          warningHandler(option, [], []);
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", 1, "infinity");
+          errorHandler(option, "number", [], 1, "infinity");
         }
       }
 
-      // Navigation Direction -- FIX
+      // Navigation Direction
       if (key === "navigationDirection") {
         if (
-          options.navigationDirection === undefined ||
-          (typeof options.navigationDirection === "string" &&
-            (options.navigationDirection === "two-way" ||
-              options.navigationDirection === "one-way" ||
-              options.navigationDirection === "none"))
+          value === undefined ||
+          (typeof value === "string" &&
+            (value === "two-way" || value === "one-way" || value === "none"))
         ) {
-          if (options.navigationDirection !== undefined) {
-            if (options.infiniteLoop) {
-              console.warn(
-                `Redundant Declaration '${value}': navigationDirection 'two-way' is required because infiniteLoop is set to FALSE.`
-              );
-              return "two-way";
-            }
-            if (options.continuousLoop) {
-              console.warn(
-                `Redundant Declaration '${value}': navigationDirection 'none' is required because continuousLoop is set to TRUE.`
-              );
-              return "none";
-            }
-          }
-
-          return options.navigationDirection || "two-way";
+          validOpts[key] = value;
         } else {
-          // Errors
-          if (typeof value !== "string") {
-            let err = new Error(
-              `navigationDirection value must be of type 'string'.`
-            );
-            err.name = `Invalid Type '${typeof value}'`;
-            throw err;
-          } else {
-            let err = new Error(
-              `navigationDirection must be 'two-way', 'one-way', or 'none'.`
-            );
-            err.name = `Invalid Value '${value}'`;
-            throw err;
-          }
+          errorHandler(option, "string", ["two-way", "one-way", "none"]);
         }
       }
 
-      // Show Indicator Dots -- FIX
+      // Show Indicator Dots
       if (key === "showIndicatorDots") {
         if (typeof value === "boolean" || value === undefined) {
-          warningHandler(option, [], ["continuousLoop"]);
           validOpts[key] = value;
         } else {
           errorHandler(option, "boolean");
@@ -196,7 +143,6 @@ const UC = (element, options) => {
       // Stop On Hover
       if (key === "stopOnHover") {
         if (typeof value === "boolean" || value === undefined) {
-          warningHandler(option, [], []);
           validOpts[key] = value;
         } else {
           errorHandler(option, "boolean");
@@ -207,9 +153,80 @@ const UC = (element, options) => {
     return validOpts;
   }
 
+  function optRequirements(options) {
+    let requiredOpts = {};
+
+    Object.entries(options).forEach((option) => {
+      let [key, value] = option;
+
+      // Animation Speed
+      if (key === "animationSpeed") {
+        // NONE
+      }
+
+      // Auto Slide
+      if (key === "autoSlide") {
+        if (_.options.navigationDirection === "none") {
+          requiredOpts[key] = true;
+        }
+      }
+
+      // Auto Slide Delay
+      if (key === "autoSlideDelay") {
+        // NONE
+      }
+
+      // Continuous Loop
+      if (key === "continuousLoop") {
+        // NONE
+      }
+
+      // Continuous Speed
+      if (key === "continuousSpeed") {
+        // NONE
+      }
+
+      // Infinite Loop
+      if (key === "infiniteLoop") {
+        if (_.options.autoSlide || _.options.continuousLoop) {
+          requiredOpts[key] = true;
+        }
+      }
+
+      // maxSlidesShown
+      if (key === "maxSlidesShown") {
+        // NONE
+      }
+
+      // Navigation Direction
+      if (key === "navigationDirection") {
+        if (_.options.continuousLoop) {
+          requiredOpts[key] = "none";
+        } else if (_.options.infiniteLoop === false) {
+          requiredOpts[key] = "two-way";
+        }
+      }
+
+      // Show Indicator Dots
+      if (key === "showIndicatorDots") {
+        if (_.options.continuousLoop) {
+          requiredOpts[key] = false;
+        }
+      }
+
+      // Stop On Hover
+      if (key === "stopOnHover") {
+        // NONE
+      }
+    });
+
+    return requiredOpts;
+  }
+
   options = {
     ..._.defaults,
     ..._.options,
+    ..._.required,
   };
 
   function restructureHTML() {
@@ -557,10 +574,10 @@ const UC = (element, options) => {
 };
 
 const firstUC = UC("#slider-1", {
-  maxSlidesShown: 4,
-  showIndicatorDots: false,
+  showIndicatorDots: true,
+  navigationDirection: "one-way",
 });
 firstUC.init();
 
-const secondUC = UC("#slider-2", { maxSlidesShown: 3, infiniteLoop: false });
-secondUC.init();
+// const secondUC = UC("#slider-2", { });
+// secondUC.init();

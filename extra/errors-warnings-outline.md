@@ -138,10 +138,6 @@
 
 ## Warnings
 
-### NONE
+### Redundant Declaration: stopOnHover will have no effect because continuousLoop is set to FALSE.
 
-<br />
-
-#### **NOTE: stopOnHover will take effect, regardless of the value for continuousLoop. Default value will be TRUE for continuousLoop and autoSlide. Otherwise, FALSE.**
-
-<br />
+### Redundant Declaration: stopOnHover will have no effect because autoSlide is set to FALSE.
