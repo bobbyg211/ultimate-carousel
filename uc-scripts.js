@@ -23,6 +23,7 @@ const UC = (element, settings) => {
     responsive: true,
     showIndicatorDots: true,
     stopOnHover: true,
+    slideSpace: 20,
   };
 
   validated = optValidation(settings);
@@ -432,7 +433,8 @@ const UC = (element, settings) => {
       });
 
       // Auto slide
-      let scrollInterval;
+      carousel.scrollInterval;
+      let { scrollInterval } = carousel;
       if (options.autoSlide) {
         scrollInterval = setInterval(function () {
           scrollActions(true);
@@ -451,10 +453,52 @@ const UC = (element, settings) => {
           }, options.autoSlideDelay);
         });
       }
+
+      // Stop auto slide on tab inactive
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          scrollInterval = setInterval(function () {
+            scrollActions(true);
+          }, options.autoSlideDelay);
+        } else {
+          clearInterval(scrollInterval);
+        }
+      });
+
+      // Mobile swipe to scroll
+      if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
+        carousel.el[0].addEventListener(
+          "touchstart",
+          function (event) {
+            touchstartX = event.changedTouches[0].screenX;
+          },
+          false
+        );
+
+        carousel.el[0].addEventListener(
+          "touchend",
+          function (event) {
+            touchendX = event.changedTouches[0].screenX;
+            handleGesture();
+          },
+          false
+        );
+
+        function handleGesture() {
+          if (touchendX < touchstartX) {
+            scrollActions(true);
+          }
+
+          if (touchendX > touchstartX) {
+            scrollActions(false);
+          }
+        }
+      }
     } else {
       responsiveAdjust();
       infiniteScroll();
 
+      // Stop continuousLoop on hover
       if (options.stopOnHover) {
         carousel.el.mouseenter(function () {
           carousel.scrollArea.stop(true);
@@ -464,40 +508,20 @@ const UC = (element, settings) => {
           infiniteScroll();
         });
       }
+
+      // Stop continuous loop on tab inactive
+      document.addEventListener("visibilitychange", function () {
+        if (!document.hidden) {
+          infiniteScroll();
+        } else {
+          carousel.scrollArea.stop(true);
+        }
+      });
     }
 
     $(window).on("load resize", function () {
       responsiveAdjust();
     });
-
-    if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
-      carousel.el[0].addEventListener(
-        "touchstart",
-        function (event) {
-          touchstartX = event.changedTouches[0].screenX;
-        },
-        false
-      );
-
-      carousel.el[0].addEventListener(
-        "touchend",
-        function (event) {
-          touchendX = event.changedTouches[0].screenX;
-          handleGesture();
-        },
-        false
-      );
-
-      function handleGesture() {
-        if (touchendX < touchstartX) {
-          scrollActions(true);
-        }
-
-        if (touchendX > touchstartX) {
-          scrollActions(false);
-        }
-      }
-    }
   }
 
   // Scroll Functions
@@ -629,6 +653,10 @@ const UC = (element, settings) => {
       .find(".uc--slide")
       .css("flex-basis", `${100 / options.maxSlidesShown}%`);
 
+    carousel.el
+      .find(".uc--content")
+      .css("margin", `0 ${options.slideSpace / 2}`);
+
     carousel.afterSlides.each(function (i) {
       $(this).show();
     });
@@ -742,13 +770,14 @@ const UC = (element, settings) => {
   };
 };
 
-// const c1 = UC("#slider-1", {
-//   maxSlidesShown: 4,
-//   mobileSwipeToScroll: false,
-// });
-// c1.init();
+const c1 = UC("#slider-1", {
+  maxSlidesShown: 4,
+  continuousLoop: true,
+});
+c1.init();
 
-// const c2 = UC("#slider-2", {
-//   maxSlidesShown: 8,
-// });
-// c2.init();
+const c2 = UC("#slider-2", {
+  maxSlidesShown: 8,
+  autoSlide: true,
+});
+c2.init();

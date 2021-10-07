@@ -20,11 +20,7 @@
 .uc--wrapper .uc--scroll-area .uc--slide {
   flex-shrink: 0;
   flex-grow: 0;
-  flex-basis: 100%;
-}
-
-.uc--wrapper .uc--scroll-area .uc--slide .uc--content {
-  margin: 0 20px;
+  /* flex-basis handled by JS */
 }
 
 .uc--wrapper .uc--indicators .uc--scroll-right,
@@ -143,7 +139,7 @@
 body,
 html {
   margin: 0;
-  padding: 20px;
+  /* padding: 20px; */
   overflow-x: hidden;
 }
 
@@ -155,6 +151,10 @@ html {
 
 .content-wrapper {
   padding: 100px 0;
+}
+
+.spacer {
+  margin-bottom: 1000px;
 }
 
 .uc--wrapper .uc--scroll-area .uc--slide .uc--content {
