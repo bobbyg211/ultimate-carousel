@@ -35,3 +35,5 @@
 ### - ~slider breaks if no object is provided to the options argument~
 
 ### - Auto slider freaks out if I leave the page and come back later
+
+### - continuousSpeed is too fast

@@ -15,7 +15,7 @@ const UC = (element, settings) => {
     autoSlide: false,
     autoSlideDelay: 3000,
     continuousLoop: false,
-    continuousSpeed: 5,
+    continuousSpeed: 1,
     infiniteLoop: true,
     maxSlidesShown: 1,
     mobileSwipeToScroll: true,
@@ -182,6 +182,7 @@ const UC = (element, settings) => {
         if (optObj[key]) {
           requiredOpts["infiniteLoop"] = true;
           requiredOpts["showIndicatorDots"] = false;
+          requiredOpts["mobileSwipeToScroll"] = false;
         }
       }
 
@@ -269,7 +270,13 @@ const UC = (element, settings) => {
     carousel.el.addClass("uc--wrapper");
     let html = carousel.el.html();
     carousel.el.empty();
-    carousel.el.append("<div class='uc--scroll-area'>" + html + "</div>");
+    carousel.el.append(
+      `<div class='uc--scroll-area ${
+        options.mobileSwipeToScroll ? "mobile-swipe" : ""
+      }'>` +
+        html +
+        "</div>"
+    );
     carousel.el.find(".uc--scroll-area > *").addClass("uc--slide real");
 
     // Wrap all content in "Content" DIV
@@ -462,6 +469,35 @@ const UC = (element, settings) => {
     $(window).on("load resize", function () {
       responsiveAdjust();
     });
+
+    if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
+      carousel.el[0].addEventListener(
+        "touchstart",
+        function (event) {
+          touchstartX = event.changedTouches[0].screenX;
+        },
+        false
+      );
+
+      carousel.el[0].addEventListener(
+        "touchend",
+        function (event) {
+          touchendX = event.changedTouches[0].screenX;
+          handleGesture();
+        },
+        false
+      );
+
+      function handleGesture() {
+        if (touchendX < touchstartX) {
+          scrollActions(true);
+        }
+
+        if (touchendX > touchstartX) {
+          scrollActions(false);
+        }
+      }
+    }
   }
 
   // Scroll Functions
@@ -488,18 +524,12 @@ const UC = (element, settings) => {
         pos = carousel.endingPos;
       }
 
-      if (
-        $(window).width() >= 768 ||
-        ($(window).width() <= 767 && !options.mobileSwipeToScroll)
-      ) {
-        console.log(true);
-        carousel.scrollArea.animate(
-          {
-            scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
-          },
-          carousel.speed
-        );
-      }
+      carousel.scrollArea.animate(
+        {
+          scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
+        },
+        carousel.speed
+      );
 
       carousel.activeDots
         .animate(
@@ -712,14 +742,13 @@ const UC = (element, settings) => {
   };
 };
 
-const c1 = UC("#slider-1", {
-  maxSlidesShown: 4,
+// const c1 = UC("#slider-1", {
+//   maxSlidesShown: 4,
+//   mobileSwipeToScroll: false,
+// });
+// c1.init();
 
-  continuousLoop: true,
-});
-c1.init();
-
-const c2 = UC("#slider-2", {
-  maxSlidesShown: 8,
-});
-c2.init();
+// const c2 = UC("#slider-2", {
+//   maxSlidesShown: 8,
+// });
+// c2.init();
