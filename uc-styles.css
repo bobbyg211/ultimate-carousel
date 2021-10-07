@@ -126,8 +126,9 @@
       #000 25% 75%,
       transparent 100%
     ),
-    linear-gradient(to right, transparent 13%, #000 16% 84%, transparent 87%);
-  -webkit-mask-size: 110% 110%;
+    linear-gradient(to right, transparent 90px, #000 120px),
+    linear-gradient(to left, transparent 90px, #000 120px);
+  -webkit-mask-size: 100%;
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-composite: source-in;
@@ -146,7 +147,7 @@ html {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
 }

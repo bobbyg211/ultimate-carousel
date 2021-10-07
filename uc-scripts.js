@@ -19,6 +19,7 @@ const UC = (element, settings) => {
     infiniteLoop: true,
     maxSlidesShown: 1,
     navigationDirection: "two-way",
+    responsive: true,
     showIndicatorDots: true,
     stopOnHover: true,
   };
@@ -331,14 +332,13 @@ const UC = (element, settings) => {
         carousel.el.find(".uc--dots").append("<span class='uc--dot'></span>");
       }
     }
+  }
 
-    if (options.maxSlidesShown) {
-      carousel.el
-        .find(".uc--slide")
-        .css("flex-basis", `${100 / options.maxSlidesShown}%`);
-    }
-
+  function carouselOptions() {
     carousel.scrollArea = carousel.el.find(".uc--scroll-area");
+    carousel.allSlides = carousel.el.find(".uc--slide");
+    carousel.afterSlides = carousel.el.find(".uc--slide.copy.after");
+    carousel.beforeSlides = carousel.el.find(".uc--slide.copy.before");
 
     carousel.arrows = carousel.el.find(".uc--arrow");
     carousel.rightArrow = carousel.el.find(".uc--scroll-right");
@@ -354,12 +354,15 @@ const UC = (element, settings) => {
     carousel.slideWidth = carousel.el.find(".uc--slide.real").outerWidth();
     carousel.numChildren = carousel.el.find(".uc--slide").length;
     carousel.numRealChildren = carousel.el.find(".uc--slide.real").length;
-    carousel.numBeforeChildren = carousel.el.find(".uc--slide.before").length;
+    carousel.numVisibleBeforeChildren = carousel.el.find(
+      ".uc--slide.before:visible"
+    ).length;
 
     carousel.counter = 0;
 
     carousel.scrollDist = carousel.scrollWidth - carousel.clientWidth;
-    carousel.startingPos = carousel.slideWidth * carousel.numBeforeChildren;
+    carousel.startingPos =
+      carousel.slideWidth * carousel.numVisibleBeforeChildren;
     carousel.endingPos = carousel.scrollDist - carousel.slideWidth;
     carousel.dotActiveWidth =
       8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
@@ -372,13 +375,16 @@ const UC = (element, settings) => {
     carousel.halfSpeed = carousel.speed / 2;
   }
 
+  function initPos(slidesShown) {
+    carousel.scrollArea.scrollLeft(carousel.startingPos);
+    carousel.dotActiveWidth = 8 * slidesShown + 8 * (slidesShown - 1);
+    carousel.activeDots.width(carousel.dotActiveWidth);
+    carousel.leadingDot.css("left", carousel.carouselIndicsWidth + "px");
+    carousel.trailingDot.css("left", "0px");
+  }
+
   function initActions() {
     if (!options.continuousLoop) {
-      // Initial positioning
-      carousel.scrollArea.scrollLeft(carousel.startingPos);
-      carousel.activeDots.width(carousel.dotActiveWidth);
-      carousel.leadingDot.css("left", carousel.carouselIndicsWidth + "px");
-
       // Scroll on click
       carousel.arrows.click(function () {
         if ($(this).hasClass("uc--scroll-right")) {
@@ -429,6 +435,10 @@ const UC = (element, settings) => {
         });
       }
     }
+
+    $(window).on("load resize", function () {
+      responsiveAdjust();
+    });
   }
 
   // Scroll Functions
@@ -555,10 +565,110 @@ const UC = (element, settings) => {
     );
   }
 
+  // Responsiveness
+
+  function responsiveAdjust() {
+    carousel.el
+      .find(".uc--slide")
+      .css("flex-basis", `${100 / options.maxSlidesShown}%`);
+
+    carousel.afterSlides.each(function (i) {
+      $(this).show();
+    });
+
+    $(carousel.beforeSlides.get().reverse()).each(function (i) {
+      $(this).show();
+    });
+
+    carouselOptions();
+    initPos(options.maxSlidesShown);
+
+    // FOUR slides
+    if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 4}%`);
+
+      carousel.afterSlides.each(function (i) {
+        if (i >= 4) {
+          $(this).hide();
+        }
+      });
+
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 4) {
+          $(this).hide();
+        }
+      });
+
+      carouselOptions();
+      initPos(4);
+    }
+
+    // THREE slides
+    if ($(window).width() <= 1200 && options.maxSlidesShown > 3) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 3}%`);
+
+      carousel.afterSlides.each(function (i) {
+        if (i >= 3) {
+          $(this).hide();
+        }
+      });
+
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 3) {
+          $(this).hide();
+        }
+      });
+
+      carouselOptions();
+      initPos(3);
+    }
+
+    // TWO slides
+    if ($(window).width() <= 1000 && options.maxSlidesShown > 2) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 2}%`);
+
+      carousel.afterSlides.each(function (i) {
+        if (i >= 2) {
+          $(this).hide();
+        }
+      });
+
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 2) {
+          $(this).hide();
+        }
+      });
+
+      carouselOptions();
+      initPos(2);
+    }
+
+    // ONE slide
+    if ($(window).width() <= 767 && options.maxSlidesShown > 1) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 1}%`);
+
+      carousel.afterSlides.each(function (i) {
+        if (i >= 1) {
+          $(this).hide();
+        }
+      });
+
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 1) {
+          $(this).hide();
+        }
+      });
+
+      carouselOptions();
+      initPos(1);
+    }
+  }
+
   // Initialize
 
   function init() {
     createCarousel();
+    carouselOptions();
     initActions();
 
     console.log(_);
@@ -569,5 +679,8 @@ const UC = (element, settings) => {
   };
 };
 
-const c1 = UC("#slider-1");
-c1.init();
+// const c1 = UC("#slider-1", { maxSlidesShown: 3 });
+// c1.init();
+
+// const c2 = UC("#slider-2", { maxSlidesShown: 5 });
+// c2.init();

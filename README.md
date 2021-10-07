@@ -2,7 +2,11 @@
 
 ## To-Do
 
-### - Adjust slide sizes on screen resize
+### - ~Adjust slide sizes on screen resize~
+
+### - set maxSlidesShown to be no greater than numChildren - 1
+
+### - Swipe to scroll on mobile
 
 ### - Slides scrolled per click option
 
@@ -18,10 +22,14 @@
 
 ### - Stop all animations when not in viewport
 
+### - Lazy image loading option
+
+### - Adaptive height option
+
 ## Errors
 
 ### - slider breaks when animationSpeed and autoSlideDelay are the same. What will happen if autoSlideDelay is less than animationSpeed?
 
-### - slider breaks if no object is provided to the options argument
+### - ~slider breaks if no object is provided to the options argument~
 
 ### - Auto slider freaks out if I leave the page and come back later
