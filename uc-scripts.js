@@ -18,6 +18,7 @@ const UC = (element, settings) => {
     continuousSpeed: 5,
     infiniteLoop: true,
     maxSlidesShown: 1,
+    mobileSwipeToScroll: true,
     navigationDirection: "two-way",
     responsive: true,
     showIndicatorDots: true,
@@ -77,7 +78,7 @@ const UC = (element, settings) => {
         }
       }
 
-      // Continuous Speed -- FIX
+      // Continuous Speed
       if (key === "continuousSpeed") {
         if ((typeof value === "number" && value > 0) || value === undefined) {
           validOpts[key] = value;
@@ -97,10 +98,24 @@ const UC = (element, settings) => {
 
       // maxSlidesShown
       if (key === "maxSlidesShown") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+        const numSlides = carousel.el.children().length;
+
+        if (
+          (typeof value === "number" && value > 0 && value <= numSlides - 1) ||
+          value === undefined
+        ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, "infinity");
+          errorHandler(option, "number", [], 1, numSlides - 1);
+        }
+      }
+
+      // mobileSwipeToScroll
+      if (key === "mobileSwipeToScroll") {
+        if (typeof value === "boolean" || value === undefined) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "boolean");
         }
       }
 
@@ -152,8 +167,8 @@ const UC = (element, settings) => {
 
       // Auto Slide
       if (key === "autoSlide") {
-        if (optObj.navigationDirection === "none") {
-          requiredOpts[key] = true;
+        if (optObj[key]) {
+          requiredOpts["infiniteLoop"] = true;
         }
       }
 
@@ -164,18 +179,23 @@ const UC = (element, settings) => {
 
       // Continuous Loop
       if (key === "continuousLoop") {
-        // NONE
+        if (optObj[key]) {
+          requiredOpts["infiniteLoop"] = true;
+          requiredOpts["showIndicatorDots"] = false;
+        }
       }
 
       // Continuous Speed
       if (key === "continuousSpeed") {
-        // NONE
+        if (optObj[key]) {
+          requiredOpts["navigationDirection"] = "none";
+        }
       }
 
       // Infinite Loop
       if (key === "infiniteLoop") {
-        if (optObj.autoSlide || optObj.continuousLoop) {
-          requiredOpts[key] = true;
+        if (optObj[key] === false) {
+          requiredOpts["navigationDirection"] = "two-way";
         }
       }
 
@@ -186,18 +206,14 @@ const UC = (element, settings) => {
 
       // Navigation Direction
       if (key === "navigationDirection") {
-        if (optObj.continuousLoop) {
-          requiredOpts[key] = "none";
-        } else if (optObj.infiniteLoop === false) {
-          requiredOpts[key] = "two-way";
+        if (optObj[key] === "none") {
+          requiredOpts["autoSlide"] = true;
         }
       }
 
       // Show Indicator Dots
       if (key === "showIndicatorDots") {
-        if (optObj.continuousLoop) {
-          requiredOpts[key] = false;
-        }
+        // NONE
       }
 
       // Stop On Hover
@@ -224,7 +240,13 @@ const UC = (element, settings) => {
     if (value < min || value > max) {
       let err = new Error(
         `${key} must be ${
-          max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`
+          max !== "infinity"
+            ? `${
+                key === "maxSlidesShown"
+                  ? `less than the total number of slides (${max + 1})`
+                  : `between ${min} and ${max}`
+              }`
+            : `at least ${min}`
         }.`
       );
       err.name = `Invalid Value '${key}: ${value}'`;
@@ -423,6 +445,7 @@ const UC = (element, settings) => {
         });
       }
     } else {
+      responsiveAdjust();
       infiniteScroll();
 
       if (options.stopOnHover) {
@@ -465,14 +488,18 @@ const UC = (element, settings) => {
         pos = carousel.endingPos;
       }
 
-      carousel.scrollArea.animate(
-        {
-          scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
-        },
-        carousel.speed
-      );
-
-      console.log(carousel.halfSpeed);
+      if (
+        $(window).width() >= 768 ||
+        ($(window).width() <= 767 && !options.mobileSwipeToScroll)
+      ) {
+        console.log(true);
+        carousel.scrollArea.animate(
+          {
+            scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
+          },
+          carousel.speed
+        );
+      }
 
       carousel.activeDots
         .animate(
@@ -583,6 +610,12 @@ const UC = (element, settings) => {
     carouselOptions();
     initPos(options.maxSlidesShown);
 
+    if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
+      carousel.arrows.hide();
+    } else {
+      carousel.arrows.show();
+    }
+
     // FOUR slides
     if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {
       carousel.el.find(".uc--slide").css("flex-basis", `${100 / 4}%`);
@@ -679,8 +712,14 @@ const UC = (element, settings) => {
   };
 };
 
-// const c1 = UC("#slider-1", { maxSlidesShown: 3 });
-// c1.init();
+const c1 = UC("#slider-1", {
+  maxSlidesShown: 4,
 
-// const c2 = UC("#slider-2", { maxSlidesShown: 5 });
-// c2.init();
+  continuousLoop: true,
+});
+c1.init();
+
+const c2 = UC("#slider-2", {
+  maxSlidesShown: 8,
+});
+c2.init();

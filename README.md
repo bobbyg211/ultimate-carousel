@@ -4,7 +4,7 @@
 
 ### - ~Adjust slide sizes on screen resize~
 
-### - set maxSlidesShown to be no greater than numChildren - 1
+### - ~set maxSlidesShown to be no greater than numChildren - 1~
 
 ### - Swipe to scroll on mobile
 
@@ -25,6 +25,8 @@
 ### - Lazy image loading option
 
 ### - Adaptive height option
+
+### - Make ADA compliant
 
 ## Errors
 
