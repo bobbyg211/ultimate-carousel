@@ -16,7 +16,7 @@
 
 ### - ~Space between slides~
 
-### - ~Stop all animations when not in viewport~
+### - Stop all animations when not in viewport
 
 ### - Lazy image loading option
 

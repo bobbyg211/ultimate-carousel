@@ -17,6 +17,7 @@ const UC = (element, settings) => {
     continuousLoop: false,
     continuousSpeed: 1,
     infiniteLoop: true,
+    itemsPerSlide: 1,
     maxSlidesShown: 1,
     mobileSwipeToScroll: true,
     navigationDirection: "two-way",
@@ -94,6 +95,28 @@ const UC = (element, settings) => {
           validOpts[key] = value;
         } else {
           errorHandler(option, "boolean");
+        }
+      }
+
+      // itemsPerSlide
+      if (key === "itemsPerSlide") {
+        const numSlides = carousel.el.children().length;
+
+        if (
+          (typeof value === "number" &&
+            value > 0 &&
+            value <= Math.ceil(numSlides / optObj.maxSlidesShown - 1)) ||
+          value === undefined
+        ) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(
+            option,
+            "number",
+            [],
+            1,
+            Math.ceil(numSlides / optObj.maxSlidesShown - 1)
+          );
         }
       }
 
@@ -240,19 +263,29 @@ const UC = (element, settings) => {
 
     // BAD VALUE 'number'
     if (value < min || value > max) {
-      let err = new Error(
-        `${key} must be ${
-          max !== "infinity"
-            ? `${
-                key === "maxSlidesShown"
-                  ? `less than the total number of slides (${max + 1})`
-                  : `between ${min} and ${max}`
-              }`
-            : `at least ${min}`
-        }.`
-      );
-      err.name = `Invalid Value '${key}: ${value}'`;
-      throw err;
+      if (key === "maxSlidesShown") {
+        let err = new Error(
+          `${key} must be greater than 0 and less than the total number of slides (${
+            max + 1
+          }).`
+        );
+        err.name = `Invalid Value '${key}: ${value}'`;
+        throw err;
+      } else if (key === "itemsPerSlide") {
+        let err = new Error(
+          `maxSlidesShown and the total number of slides limits this value. With current values, ${key} must be between ${min} and ${max}.`
+        );
+        err.name = `Invalid Value '${key}: ${value}'`;
+        throw err;
+      } else {
+        let err = new Error(
+          `${key} must be ${
+            max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`
+          }.`
+        );
+        err.name = `Invalid Value '${key}: ${value}'`;
+        throw err;
+      }
     }
 
     // BAD VALUE 'string'
@@ -269,24 +302,36 @@ const UC = (element, settings) => {
 
   function createCarousel() {
     carousel.el.addClass("uc--wrapper");
-    let html = carousel.el.html();
-    carousel.el.empty();
-    carousel.el.append(
-      `<div class='uc--scroll-area ${
-        options.mobileSwipeToScroll ? "mobile-swipe" : ""
-      }'>` +
-        html +
-        "</div>"
-    );
-    carousel.el.find(".uc--scroll-area > *").addClass("uc--slide real");
+    const origSlides = carousel.el
+      .find("> *")
+      .map(function () {
+        return $(this)[0].innerHTML;
+      })
+      .get();
 
-    // Wrap all content in "Content" DIV
-    let slides = carousel.el.find(".uc--slide");
-    $(slides).each(function () {
-      let html = $(this).html();
-      $(this).empty();
-      $(this).append("<div class='uc--content'>" + html + "</div>");
-    });
+    carousel.el.empty();
+    carousel.el.append(`<div class="uc--scroll-area"></div>`);
+
+    let numUsed = 0;
+    for (
+      let i = 1;
+      i <= Math.ceil(origSlides.length / options.itemsPerSlide);
+      i++
+    ) {
+      carousel.el
+        .find(".uc--scroll-area")
+        .append(
+          `<div class="uc--slide real"><div class="uc--content"></div></div>`
+        );
+
+      for (let j = numUsed; j < numUsed + options.itemsPerSlide; j++) {
+        const currSlide = carousel.el.find(
+          `.uc--slide:nth-child(${i}) .uc--content`
+        );
+        currSlide.append(origSlides[j]);
+      }
+      numUsed += options.itemsPerSlide;
+    }
 
     // Add slide copies
     if (options.infiniteLoop) {
@@ -771,13 +816,23 @@ const UC = (element, settings) => {
 };
 
 const c1 = UC("#slider-1", {
-  maxSlidesShown: 4,
-  continuousLoop: true,
+  maxSlidesShown: 1,
+  itemsPerSlide: 2,
 });
 c1.init();
 
 const c2 = UC("#slider-2", {
-  maxSlidesShown: 8,
-  autoSlide: true,
+  maxSlidesShown: 3,
+  itemsPerSlide: 3,
 });
 c2.init();
+
+/*
+
+maxSlidesShown = 3
+itemsPerSlide = 2
+slidesPerScroll = 2
+
+
+
+*/
