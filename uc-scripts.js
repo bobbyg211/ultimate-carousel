@@ -1,66 +1,58 @@
-const UC = (element, options) => {
-  const _ = this;
+const UC = (element, settings) => {
+  // GLOBAL variables
+  settings = settings || {};
+  const _this = this;
+  _this._ = {};
+  const { _ } = _this;
+  _.carousel = {};
+  const { carousel } = _;
+  carousel.el = $(element);
 
-  _.defaults = {
+  // Options setup & validation
+
+  defaults = {
     animationSpeed: 500,
     autoSlide: false,
     autoSlideDelay: 3000,
     continuousLoop: false,
     continuousSpeed: 5,
     infiniteLoop: true,
+    itemsPerSlide: 1,
     maxSlidesShown: 1,
+    mobileSwipeToScroll: true,
     navigationDirection: "two-way",
+    responsive: true,
     showIndicatorDots: true,
     stopOnHover: true,
+    slideSpace: 20,
   };
 
-  _.options = optValidation(options);
-  _.required = optRequirements(options);
+  validated = optValidation(settings);
+  required = optRequirements(validated);
 
-  function errorHandler(option, type, array, min, max) {
-    let [key, value] = option;
-    array = array || [];
+  _.options = {
+    ...defaults,
+    ...validated,
+    ...required,
+  };
 
-    // WRONG TYPE
-    if (typeof value !== type) {
-      let err = new Error(`${key} value must be of type '${type}'.`);
-      err.name = `Invalid Type '${typeof value}'`;
-      throw err;
-    }
+  const { options } = _;
 
-    // BAD VALUE 'number'
-    if (value < min || value > max) {
-      let err = new Error(
-        `${key} must be ${
-          max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`
-        }.`
-      );
-      err.name = `Invalid Value '${key}: ${value}'`;
-      throw err;
-    }
-
-    // BAD VALUE 'string'
-    if (!array.includes(value)) {
-      let err = new Error(
-        `${key} must be one of the following values: '${array}'.`
-      );
-      err.name = `Invalid Value '${key}: ${value}'`;
-      throw err;
-    }
-  }
-
-  function optValidation(options) {
+  function optValidation(optObj) {
     let validOpts = {};
 
-    Object.entries(options).forEach((option) => {
+    Object.entries(optObj).forEach((option) => {
       let [key, value] = option;
 
       // Animation Speed
       if (key === "animationSpeed") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+        if (
+          (typeof value === "number" && value >= 250) ||
+          value === undefined
+        ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, "infinity");
+          errorHandler(option, "number", [], 250, "infinity");
         }
       }
 
@@ -75,10 +67,13 @@ const UC = (element, options) => {
 
       // Auto Slide Delay
       if (key === "autoSlideDelay") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+        if (
+          (typeof value === "number" && value >= 500) ||
+          value === undefined
+        ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, "infinity");
+          errorHandler(option, "number", [], 500, "infinity");
         }
       }
 
@@ -91,7 +86,7 @@ const UC = (element, options) => {
         }
       }
 
-      // Continuous Speed -- FIX
+      // Continuous Speed
       if (key === "continuousSpeed") {
         if ((typeof value === "number" && value > 0) || value === undefined) {
           validOpts[key] = value;
@@ -109,12 +104,55 @@ const UC = (element, options) => {
         }
       }
 
-      // maxSlidesShown
-      if (key === "maxSlidesShown") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+      // itemsPerSlide
+      if (key === "itemsPerSlide") {
+        const numSlides = carousel.el.children().length;
+
+        if (
+          (typeof value === "number" &&
+            value > 0 &&
+            value <= Math.ceil(numSlides / optObj.maxSlidesShown - 1)) ||
+          value === undefined
+        ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, "infinity");
+          errorHandler(
+            option,
+            "number",
+            [],
+            1,
+            Math.ceil(numSlides / optObj.maxSlidesShown - 1)
+          );
+        }
+      }
+
+      // maxSlidesShown
+      if (key === "maxSlidesShown") {
+        const numSlides = carousel.el.children().length;
+
+        if (
+          (typeof value === "number" &&
+            value > 0 &&
+            value <= numSlides - 1 &&
+            value <= 5) ||
+          value === undefined
+        ) {
+          validOpts[key] = value;
+        } else {
+          if (value > 5) {
+            errorHandler(option, "number", [], 1, 5);
+          } else {
+            errorHandler(option, "number", [], 1, numSlides - 1);
+          }
+        }
+      }
+
+      // mobileSwipeToScroll
+      if (key === "mobileSwipeToScroll") {
+        if (typeof value === "boolean" || value === undefined) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "boolean");
         }
       }
 
@@ -153,10 +191,10 @@ const UC = (element, options) => {
     return validOpts;
   }
 
-  function optRequirements(options) {
+  function optRequirements(optObj) {
     let requiredOpts = {};
 
-    Object.entries(options).forEach((option) => {
+    Object.entries(optObj).forEach((option) => {
       let [key, value] = option;
 
       // Animation Speed
@@ -166,8 +204,8 @@ const UC = (element, options) => {
 
       // Auto Slide
       if (key === "autoSlide") {
-        if (_.options.navigationDirection === "none") {
-          requiredOpts[key] = true;
+        if (optObj[key]) {
+          requiredOpts["infiniteLoop"] = true;
         }
       }
 
@@ -178,18 +216,24 @@ const UC = (element, options) => {
 
       // Continuous Loop
       if (key === "continuousLoop") {
-        // NONE
+        if (optObj[key]) {
+          requiredOpts["infiniteLoop"] = true;
+          requiredOpts["showIndicatorDots"] = false;
+          requiredOpts["mobileSwipeToScroll"] = false;
+        }
       }
 
       // Continuous Speed
       if (key === "continuousSpeed") {
-        // NONE
+        if (optObj[key]) {
+          requiredOpts["navigationDirection"] = "none";
+        }
       }
 
       // Infinite Loop
       if (key === "infiniteLoop") {
-        if (_.options.autoSlide || _.options.continuousLoop) {
-          requiredOpts[key] = true;
+        if (optObj[key] === false) {
+          requiredOpts["navigationDirection"] = "two-way";
         }
       }
 
@@ -200,18 +244,14 @@ const UC = (element, options) => {
 
       // Navigation Direction
       if (key === "navigationDirection") {
-        if (_.options.continuousLoop) {
-          requiredOpts[key] = "none";
-        } else if (_.options.infiniteLoop === false) {
-          requiredOpts[key] = "two-way";
+        if (optObj[key] === "none") {
+          requiredOpts["autoSlide"] = true;
         }
       }
 
       // Show Indicator Dots
       if (key === "showIndicatorDots") {
-        if (_.options.continuousLoop) {
-          requiredOpts[key] = false;
-        }
+        // NONE
       }
 
       // Stop On Hover
@@ -223,58 +263,122 @@ const UC = (element, options) => {
     return requiredOpts;
   }
 
-  options = {
-    ..._.defaults,
-    ..._.options,
-    ..._.required,
-  };
+  function errorHandler(option, type, array, min, max) {
+    let [key, value] = option;
+    array = array || [];
 
-  function restructureHTML() {
-    console.log(options);
+    // WRONG TYPE
+    if (typeof value !== type) {
+      let err = new Error(`${key} value must be of type '${type}'.`);
+      err.name = `Invalid Type '${typeof value}'`;
+      throw err;
+    }
 
-    let slider = {};
+    // BAD VALUE 'number'
+    if (value < min || value > max) {
+      if (key === "maxSlidesShown") {
+        let err;
+        if (value > 5) {
+          err = new Error(`${key} can not be greater than 5.`);
+        } else {
+          err = new Error(
+            `${key} must be greater than 0 and less than the total number of slides (${
+              max + 1
+            }).`
+          );
+        }
 
-    // Adjust main wrappers
-    slider.el = $(element);
+        err.name = `Invalid Value '${key}: ${value}'`;
+        throw err;
+      } else if (key === "itemsPerSlide") {
+        let err = new Error(
+          `maxSlidesShown and the total number of slides limits this value. With current values, ${key} must be between ${min} and ${max}.`
+        );
+        err.name = `Invalid Value '${key}: ${value}'`;
+        throw err;
+      } else {
+        let err = new Error(
+          `${key} must be ${
+            max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`
+          }.`
+        );
+        err.name = `Invalid Value '${key}: ${value}'`;
+        throw err;
+      }
+    }
 
-    slider.el.addClass("uc--wrapper");
-    let html = slider.el.html();
-    slider.el.empty();
-    slider.el.append("<div class='uc--scroll-area'>" + html + "</div>");
-    slider.el.find(".uc--scroll-area > *").addClass("uc--slide real");
+    // BAD VALUE 'string'
+    if (!array.includes(value)) {
+      let err = new Error(
+        `${key} must be one of the following values: '${array}'.`
+      );
+      err.name = `Invalid Value '${key}: ${value}'`;
+      throw err;
+    }
+  }
 
-    // Wrap all content in "Content" DIV
-    let slides = slider.el.find(".uc--slide");
-    $(slides).each(function () {
-      let html = $(this).html();
-      $(this).empty();
-      $(this).append("<div class='uc--content'>" + html + "</div>");
-    });
+  // Create Carousel
+
+  function createCarousel() {
+    carousel.el.addClass("uc--wrapper");
+    const origSlides = carousel.el
+      .find("> *")
+      .map(function () {
+        return $(this)[0].innerHTML;
+      })
+      .get();
+
+    carousel.el.empty();
+    carousel.el.append(`<div class="uc--scroll-area"></div>`);
+
+    let numUsed = 0;
+    for (
+      let i = 1;
+      i <= Math.ceil(origSlides.length / options.itemsPerSlide);
+      i++
+    ) {
+      carousel.el
+        .find(".uc--scroll-area")
+        .append(
+          `<div class="uc--slide real"><div class="uc--content"></div></div>`
+        );
+
+      for (let j = numUsed; j < numUsed + options.itemsPerSlide; j++) {
+        const currSlide = carousel.el.find(
+          `.uc--slide:nth-child(${i}) .uc--content`
+        );
+        currSlide.append(origSlides[j]);
+      }
+      numUsed += options.itemsPerSlide;
+    }
 
     // Add slide copies
     if (options.infiniteLoop) {
-      slider.firstSlides = slider.el.find(
+      carousel.firstSlides = carousel.el.find(
         ".uc--slide:nth-child(-n+" + options.maxSlidesShown + ")"
       );
-      slider.lastSlides = slider.el.find(
+      carousel.lastSlides = carousel.el.find(
         ".uc--slide:nth-last-child(-n+" + options.maxSlidesShown + ")"
       );
 
       if (!options.continuousLoop) {
-        slider.el
+        carousel.el
           .find(".uc--scroll-area")
           .prepend(
-            slider.lastSlides
+            carousel.lastSlides
               .clone()
               .removeClass("real")
               .addClass("copy before")
           );
       }
 
-      slider.el
+      carousel.el
         .find(".uc--scroll-area")
         .append(
-          slider.firstSlides.clone().removeClass("real").addClass("copy after")
+          carousel.firstSlides
+            .clone()
+            .removeClass("real")
+            .addClass("copy after")
         );
     }
 
@@ -306,7 +410,7 @@ const UC = (element, options) => {
       
       ${
         options.showIndicatorDots
-          ? `<div class="uc--slider-indics">
+          ? `<div class="uc--dots">
       <span class="uc--dot active trailing"></span>
       <span class="uc--dot active leading"></span>
     </div>`
@@ -316,259 +420,496 @@ const UC = (element, options) => {
     </div>
     `;
 
-      slider.el.append(indicators);
+      carousel.el.append(indicators);
 
-      for (let i = 0; i < slider.el.find(".uc--slide.real").length; i++) {
-        slider.el
-          .find(".uc--slider-indics")
-          .append("<span class='uc--dot'></span>");
+      for (let i = 0; i < carousel.el.find(".uc--slide.real").length; i++) {
+        carousel.el.find(".uc--dots").append("<span class='uc--dot'></span>");
       }
     }
   }
 
-  function applyLayout() {
-    let slider = {};
+  function carouselOptions() {
+    carousel.scrollArea = carousel.el.find(".uc--scroll-area");
+    carousel.allSlides = carousel.el.find(".uc--slide");
+    carousel.afterSlides = carousel.el.find(".uc--slide.copy.after");
+    carousel.beforeSlides = carousel.el.find(".uc--slide.copy.before");
 
-    slider.el = $(element);
+    carousel.arrows = carousel.el.find(".uc--arrow");
+    carousel.rightArrow = carousel.el.find(".uc--scroll-right");
+    carousel.leftArrow = carousel.el.find(".uc--scroll-left");
 
-    if (options.maxSlidesShown) {
-      slider.el
-        .find(".uc--slide")
-        .css("flex-basis", `${100 / options.maxSlidesShown}%`);
-    }
-  }
+    carousel.carouselIndicsWidth = carousel.el.find(".uc--dots").width();
+    carousel.activeDots = carousel.el.find(".uc--dot.active");
+    carousel.leadingDot = carousel.el.find(".uc--dot.active.leading");
+    carousel.trailingDot = carousel.el.find(".uc--dot.active.trailing");
 
-  function initVars() {
-    const slider = {};
+    carousel.scrollWidth = carousel.el.find(".uc--scroll-area")[0].scrollWidth;
+    carousel.clientWidth = carousel.el.find(".uc--scroll-area")[0].clientWidth;
+    carousel.slideWidth = carousel.el.find(".uc--slide.real").outerWidth();
+    carousel.numChildren = carousel.el.find(".uc--slide").length;
+    carousel.numRealChildren = carousel.el.find(".uc--slide.real").length;
+    carousel.numVisibleBeforeChildren = carousel.el.find(
+      ".uc--slide.before:visible"
+    ).length;
 
-    // GLOBAL variables
-    slider.el = $(element);
+    carousel.counter = 0;
 
-    slider.scrollArea = slider.el.find(".uc--scroll-area");
-
-    slider.arrows = slider.el.find(".uc--arrow");
-    slider.rightArrow = slider.el.find(".uc--scroll-right");
-    slider.leftArrow = slider.el.find(".uc--scroll-left");
-
-    slider.sliderIndicsWidth = slider.el.find(".uc--slider-indics").width();
-    slider.activeDots = slider.el.find(".uc--dot.active");
-    slider.leadingDot = slider.el.find(".uc--dot.active.leading");
-    slider.trailingDot = slider.el.find(".uc--dot.active.trailing");
-
-    slider.scrollWidth = slider.el.find(".uc--scroll-area")[0].scrollWidth;
-    slider.clientWidth = slider.el.find(".uc--scroll-area")[0].clientWidth;
-    slider.slideWidth = slider.el.find(".uc--slide.real").outerWidth();
-    slider.numChildren = slider.el.find(".uc--slide").length;
-    slider.numRealChildren = slider.el.find(".uc--slide.real").length;
-    slider.numBeforeChildren = slider.el.find(".uc--slide.before").length;
-
-    slider.counter = 0;
-
-    // RESPONSIVE variables
-    slider.scrollDist = slider.scrollWidth - slider.clientWidth;
-    slider.startingPos = slider.slideWidth * slider.numBeforeChildren;
-    slider.endingPos = slider.scrollDist - slider.slideWidth;
-    slider.dotActiveWidth =
+    carousel.scrollDist = carousel.scrollWidth - carousel.clientWidth;
+    carousel.startingPos =
+      carousel.slideWidth * carousel.numVisibleBeforeChildren;
+    carousel.endingPos = carousel.scrollDist - carousel.slideWidth;
+    carousel.dotActiveWidth =
       8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
 
-    // DEPENDANT variables
-    slider.max = options.infiniteLoop
-      ? slider.numRealChildren
-      : slider.numRealChildren - options.maxSlidesShown;
-    slider.indicEndpoint = 8 * slider.max + 8 * 3;
-    slider.speed = options.animationSpeed;
-    slider.halfspeed = slider.speed / 2;
-
-    return slider;
+    carousel.max = options.infiniteLoop
+      ? carousel.numRealChildren
+      : carousel.numRealChildren - options.maxSlidesShown;
+    carousel.indicEndpoint = 8 * carousel.max + 8 * 3;
+    carousel.speed = options.animationSpeed;
+    carousel.halfSpeed = carousel.speed / 2;
   }
 
-  function scrollActions(slider, direction) {
+  function initPos(slidesShown) {
+    carousel.scrollArea.scrollLeft(carousel.startingPos);
+    carousel.dotActiveWidth = 8 * slidesShown + 8 * (slidesShown - 1);
+    carousel.activeDots.width(carousel.dotActiveWidth);
+    carousel.leadingDot.css("left", carousel.carouselIndicsWidth + "px");
+    carousel.trailingDot.css("left", "0px");
+  }
+
+  function stopAnimations() {
+    // HOVER OVER ELEMENT
+    if (options.stopOnHover) {
+      carousel.el.mouseenter(function () {
+        if (options.continuousLoop) {
+          carousel.scrollArea.stop(true);
+        } else if (options.autoSlide) {
+          clearInterval(carousel.scrollInterval);
+        }
+      });
+
+      carousel.el.mouseleave(function () {
+        if (options.continuousLoop) {
+          infiniteScroll();
+        } else if (options.autoSlide) {
+          carousel.scrollInterval = setInterval(function () {
+            scrollActions(true);
+          }, carousel.speed + options.autoSlideDelay);
+        }
+      });
+    }
+
+    // DOCUMENT HIDDEN
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        if (options.continuousLoop) {
+          carousel.scrollArea.stop(true);
+        } else if (options.autoSlide) {
+          clearInterval(carousel.scrollInterval);
+        }
+      } else {
+        if (options.continuousLoop) {
+          infiniteScroll();
+        } else if (options.autoSlide) {
+          carousel.scrollInterval = setInterval(function () {
+            scrollActions(true);
+          }, carousel.speed + options.autoSlideDelay);
+        }
+      }
+    });
+
+    // OUT OF VIEW
+
+    let isScrolling;
+    carousel.wasVis = false;
+
+    ["scroll", "load", "resize"].forEach(function (e) {
+      window.addEventListener(e, function () {
+        window.clearTimeout(isScrolling);
+
+        isScrolling = setTimeout(function () {
+          carousel.position = carousel.el[0].getBoundingClientRect();
+          carousel.visible =
+            carousel.position.top >= -carousel.el.height() &&
+            carousel.position.bottom <=
+              window.innerHeight + carousel.el.height();
+
+          if (options.continuousLoop) {
+            if (!carousel.visible) {
+              carousel.scrollArea.stop(true);
+              carousel.wasVis = true;
+            } else {
+              if (carousel.wasVis) {
+                infiniteScroll();
+                carousel.wasVis = false;
+              }
+            }
+          } else if (options.autoSlide) {
+            if (!carousel.visible) {
+              clearInterval(carousel.scrollInterval);
+              carousel.wasVis = true;
+            } else {
+              if (carousel.wasVis) {
+                carousel.scrollInterval = setInterval(function () {
+                  scrollActions(true);
+                }, carousel.speed + options.autoSlideDelay);
+                carousel.wasVis = false;
+              }
+            }
+          }
+        }, 66);
+      });
+    });
+
+    $(window).on("load scroll", function () {
+      clearTimeout($.data(this, "scrollTimer"));
+      $.data(
+        this,
+        "scrollTimer",
+        setTimeout(function () {
+          if (options.continuousLoop) {
+          } else if (options.autoSlide) {
+          }
+
+          // function isInViewport(element) {
+          //   const rect = element;
+          //   return (
+          //     rect.top >= -$(element).height() &&
+          //     rect.bottom <= window.innerHeight + $(element).height()
+          //   );
+          // }
+          // if (isInViewport(carousel.el[0])) {
+          //   infiniteScroll();
+          // } else {
+          //   carousel.scrollArea.stop(true);
+          // }
+        }, 250)
+      );
+    });
+  }
+
+  function initActions() {
+    if (!options.continuousLoop) {
+      // Scroll on click
+      carousel.arrows.click(function () {
+        if ($(this).hasClass("uc--scroll-right")) {
+          scrollActions(true);
+        } else {
+          scrollActions(false);
+        }
+
+        // Stop auto slide on arrow click
+        if (options.autoSlide) {
+          clearInterval(carousel.scrollInterval);
+          carousel.scrollInterval = setInterval(function () {
+            scrollActions(true);
+          }, carousel.speed + options.autoSlideDelay);
+        }
+      });
+
+      // Auto slide
+      if (options.autoSlide) {
+        carousel.scrollInterval = setInterval(function () {
+          scrollActions(true);
+        }, carousel.speed + options.autoSlideDelay);
+      }
+
+      // Mobile swipe to scroll
+      if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
+        carousel.el[0].addEventListener(
+          "touchstart",
+          function (event) {
+            touchstartX = event.changedTouches[0].screenX;
+          },
+          false
+        );
+
+        carousel.el[0].addEventListener(
+          "touchend",
+          function (event) {
+            touchendX = event.changedTouches[0].screenX;
+            handleGesture();
+          },
+          false
+        );
+
+        function handleGesture() {
+          if (touchendX < touchstartX) {
+            scrollActions(true);
+          }
+
+          if (touchendX > touchstartX) {
+            scrollActions(false);
+          }
+        }
+      }
+    } else {
+      responsiveAdjust();
+      infiniteScroll();
+    }
+
+    $(window).on("load resize", function () {
+      responsiveAdjust();
+    });
+  }
+
+  // Scroll Functions
+
+  function scrollActions(direction) {
     if (
       options.infiniteLoop ||
       (!options.infiniteLoop &&
-        ((direction && slider.counter !== slider.max) ||
-          (!direction && slider.counter !== 0)))
+        ((direction && carousel.counter !== carousel.max) ||
+          (!direction && carousel.counter !== 0)))
     ) {
-      slider.rightArrow.css("pointer-events", "none");
-      slider.leftArrow.css("pointer-events", "none");
+      carousel.rightArrow.css("pointer-events", "none");
+      carousel.leftArrow.css("pointer-events", "none");
 
       let edge, pos, reset;
 
       if (direction) {
-        edge = slider.max;
+        edge = carousel.max;
         reset = 0;
-        pos = slider.startingPos;
+        pos = carousel.startingPos;
       } else {
         edge = 0;
-        reset = slider.max;
-        pos = slider.endingPos;
+        reset = carousel.max;
+        pos = carousel.endingPos;
       }
 
-      slider.scrollArea.animate(
+      carousel.scrollArea.animate(
         {
-          scrollLeft: `${direction ? "+" : "-"}=${slider.slideWidth}`,
+          scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
         },
-        slider.speed
+        carousel.speed
       );
 
-      slider.activeDots
+      carousel.activeDots
         .animate(
           {
-            width: slider.dotActiveWidth + 16,
+            width: carousel.dotActiveWidth + 16,
             marginLeft: `${direction ? "+=0px" : "-=16px"}`,
           },
-          slider.halfspeed
+          carousel.halfSpeed
         )
         .promise()
         .then(function () {
-          slider.activeDots
+          carousel.activeDots
             .animate(
               {
-                width: slider.dotActiveWidth,
+                width: carousel.dotActiveWidth,
                 left: `${direction ? "+=16px" : "-=0"}`,
               },
-              slider.halfspeed
+              carousel.halfSpeed
             )
             .promise()
             .then(function () {
-              if (direction && slider.counter !== slider.max) {
-                slider.counter++;
+              if (direction && carousel.counter !== carousel.max) {
+                carousel.counter++;
               }
 
               if (!direction) {
-                slider.activeDots.css("margin-left", "5px");
+                carousel.activeDots.css("margin-left", "5px");
                 const leadLeftPos = parseInt(
-                    $(slider.leadingDot).css("left"),
+                    $(carousel.leadingDot).css("left"),
                     10
                   ),
                   trailLeftPos = parseInt(
-                    $(slider.trailingDot).css("left"),
+                    $(carousel.trailingDot).css("left"),
                     10
                   );
-                slider.leadingDot.css("left", leadLeftPos - 16 + "px");
-                slider.trailingDot.css("left", trailLeftPos - 16 + "px");
+                carousel.leadingDot.css("left", leadLeftPos - 16 + "px");
+                carousel.trailingDot.css("left", trailLeftPos - 16 + "px");
               }
 
-              if (slider.counter === edge && options.infiniteLoop) {
-                slider.scrollArea.scrollLeft(pos);
-                slider.counter = reset;
+              if (carousel.counter === edge && options.infiniteLoop) {
+                carousel.scrollArea.scrollLeft(pos);
+                carousel.counter = reset;
               }
 
-              slider.activeDots.each(function () {
+              carousel.activeDots.each(function () {
                 if (
                   parseInt($(this).css("left"), 10) ===
-                  slider.sliderIndicsWidth + 16
+                  carousel.carouselIndicsWidth + 16
                 ) {
                   $(this).css(
                     "left",
-                    "-" + (slider.sliderIndicsWidth - 16) + "px"
+                    "-" + (carousel.carouselIndicsWidth - 16) + "px"
                   );
                 } else if (
                   parseInt($(this).css("left"), 10) ===
-                  -slider.sliderIndicsWidth
+                  -carousel.carouselIndicsWidth
                 ) {
-                  $(this).css("left", slider.sliderIndicsWidth + "px");
+                  $(this).css("left", carousel.carouselIndicsWidth + "px");
                 }
               });
 
-              if (!direction && slider.counter !== 0) {
-                slider.counter--;
+              if (!direction && carousel.counter !== 0) {
+                carousel.counter--;
               }
 
-              slider.rightArrow.css("pointer-events", "auto");
-              slider.leftArrow.css("pointer-events", "auto");
+              carousel.rightArrow.css("pointer-events", "auto");
+              carousel.leftArrow.css("pointer-events", "auto");
             });
         });
     }
   }
 
-  function infiniteScroll(slider) {
+  function infiniteScroll() {
     let speed =
-      ((slider.scrollDist - slider.scrollArea.scrollLeft()) /
-        (slider.slideWidth * options.maxSlidesShown)) *
+      ((carousel.scrollDist - carousel.scrollArea.scrollLeft()) /
+        (carousel.slideWidth * options.maxSlidesShown)) *
       1000 *
       (11 - options.continuousSpeed);
 
-    slider.scrollArea.animate(
+    carousel.scrollArea.animate(
       {
-        scrollLeft: slider.scrollDist,
+        scrollLeft: carousel.scrollDist,
       },
       speed,
       "linear",
       function () {
-        slider.scrollArea.scrollLeft(0);
-        infiniteScroll(slider);
+        carousel.scrollArea.scrollLeft(0);
+        infiniteScroll(carousel);
       }
     );
   }
 
-  function initIndics(slider) {
-    if (!options.continuousLoop) {
-      // Initial positioning
-      slider.scrollArea.scrollLeft(slider.startingPos);
-      slider.activeDots.width(slider.dotActiveWidth);
-      slider.leadingDot.css("left", slider.sliderIndicsWidth + "px");
+  // Responsiveness
 
-      // Scroll on click
-      slider.arrows.click(function () {
-        if ($(this).hasClass("uc--scroll-right")) {
-          scrollActions(slider, true);
-        } else {
-          scrollActions(slider, false);
-        }
+  function responsiveAdjust() {
+    carousel.el
+      .find(".uc--slide")
+      .css("flex-basis", `${100 / options.maxSlidesShown}%`);
 
-        // Stop auto slide on arrow click
-        if (options.autoSlide) {
-          clearInterval(scrollInterval);
-          scrollInterval = setInterval(function () {
-            scrollActions(slider, true);
-          }, options.autoSlideDelay);
+    carousel.el
+      .find(".uc--content")
+      .css("margin", `0 ${options.slideSpace / 2}`);
+
+    carousel.afterSlides.each(function (i) {
+      $(this).show();
+    });
+
+    $(carousel.beforeSlides.get().reverse()).each(function (i) {
+      $(this).show();
+    });
+
+    carouselOptions();
+    initPos(options.maxSlidesShown);
+
+    if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
+      carousel.arrows.hide();
+    } else {
+      carousel.arrows.show();
+    }
+
+    // FOUR slides
+    if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 4}%`);
+
+      carousel.afterSlides.each(function (i) {
+        if (i >= 4) {
+          $(this).hide();
         }
       });
 
-      // Auto slide
-      let scrollInterval;
-      if (options.autoSlide) {
-        scrollInterval = setInterval(function () {
-          scrollActions(slider, true);
-        }, options.autoSlideDelay);
-      }
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 4) {
+          $(this).hide();
+        }
+      });
 
-      // Stop auto slide on hover
-      if (options.autoSlide && options.stopOnHover) {
-        slider.el.mouseover(function () {
-          clearInterval(scrollInterval);
-        });
+      carouselOptions();
+      initPos(4);
+    }
 
-        slider.el.mouseleave(function () {
-          scrollInterval = setInterval(function () {
-            scrollActions(slider, true);
-          }, options.autoSlideDelay);
-        });
-      }
-    } else {
-      infiniteScroll(slider);
+    // THREE slides
+    if ($(window).width() <= 1200 && options.maxSlidesShown > 3) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 3}%`);
 
-      if (options.stopOnHover) {
-        slider.el.mouseenter(function () {
-          slider.scrollArea.stop(true);
-        });
+      carousel.afterSlides.each(function (i) {
+        if (i >= 3) {
+          $(this).hide();
+        }
+      });
 
-        slider.el.mouseleave(function () {
-          infiniteScroll(slider);
-        });
-      }
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 3) {
+          $(this).hide();
+        }
+      });
+
+      carouselOptions();
+      initPos(3);
+    }
+
+    // TWO slides
+    if ($(window).width() <= 1000 && options.maxSlidesShown > 2) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 2}%`);
+
+      carousel.afterSlides.each(function (i) {
+        if (i >= 2) {
+          $(this).hide();
+        }
+      });
+
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 2) {
+          $(this).hide();
+        }
+      });
+
+      carouselOptions();
+      initPos(2);
+    }
+
+    // ONE slide
+    if ($(window).width() <= 767 && options.maxSlidesShown > 1) {
+      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 1}%`);
+
+      carousel.afterSlides.each(function (i) {
+        if (i >= 1) {
+          $(this).hide();
+        }
+      });
+
+      $(carousel.beforeSlides.get().reverse()).each(function (i) {
+        if (i >= 1) {
+          $(this).hide();
+        }
+      });
+
+      carouselOptions();
+      initPos(1);
     }
   }
 
+  // Initialize
+
   function init() {
-    restructureHTML();
-    applyLayout();
-    let slider = initVars();
-    initIndics(slider);
+    createCarousel();
+    carouselOptions();
+    initActions();
+    stopAnimations();
+
+    console.log(_);
   }
 
   return {
     init: init,
   };
 };
+
+// const c1 = UC("#slider-1", {
+//   maxSlidesShown: 2,
+//   continuousLoop: true,
+// });
+// c1.init();
+
+// const c2 = UC("#slider-2", {
+//   maxSlidesShown: 3,
+//   itemsPerSlide: 2,
+//   autoSlide: true,
+// });
+// c2.init();

@@ -2,7 +2,25 @@
 
 ## To-Do
 
-### - Adjust slide sizes on screen resize
+### CRITICAL
+
+### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
+
+### - ~Stop all animations when not in viewport~
+
+### - ~Basic ADA compliance~
+
+### OPTIONAL
+
+### - ADVANCED ADA compliance
+
+### - Option to Fade In/Out instead of slide
+
+### - Clickable indicators
+
+### - ~Adjust slide sizes on screen resize~
+
+### - ~set maxSlidesShown to be no greater than numChildren - 1~
 
 ### - Slides scrolled per click option
 
@@ -10,18 +28,20 @@
 
 ### - Complete Warning Handling
 
-### - Possibly exclude options that are not relevant due to other options
+### - ~Space between slides~
 
-### - Option to Fade In/Out instead of slide
+### - Lazy image loading option
 
-### - Space between slides
+### - Adaptive height option
 
-### - Stop all animations when not in viewport
+### - ADVANCED Swipe to scroll on mobile
+
+### - Tabbed slider option
 
 ## Errors
 
-### - slider breaks when animationSpeed and autoSlideDelay are the same. What will happen if autoSlideDelay is less than animationSpeed?
+### - ~slider breaks when animationSpeed and autoSlideDelay are the same. What will happen if autoSlideDelay is less than animationSpeed?~
 
-### - slider breaks if no object is provided to the options argument
+### - ~slider breaks if no object is provided to the options argument~
 
-### - Auto slider freaks out if I leave the page and come back later
+### - ~Auto slider freaks out if I leave the page and come back later~
