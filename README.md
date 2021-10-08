@@ -4,13 +4,19 @@
 
 ### CRITICAL
 
-### - Option to Fade In/Out instead of slide
+### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
 
-### - Stop all animations when not in viewport
+### - ~Stop all animations when not in viewport~
 
-### - Make ADA compliant
+### - ~Basic ADA compliance~
 
 ### OPTIONAL
+
+### - ADVANCED ADA compliance
+
+### - Option to Fade In/Out instead of slide
+
+### - Clickable indicators
 
 ### - ~Adjust slide sizes on screen resize~
 
@@ -29,6 +35,8 @@
 ### - Adaptive height option
 
 ### - ADVANCED Swipe to scroll on mobile
+
+### - Tabbed slider option
 
 ## Errors
 

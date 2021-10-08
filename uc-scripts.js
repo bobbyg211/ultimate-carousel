@@ -46,10 +46,13 @@ const UC = (element, settings) => {
 
       // Animation Speed
       if (key === "animationSpeed") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+        if (
+          (typeof value === "number" && value >= 250) ||
+          value === undefined
+        ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, "infinity");
+          errorHandler(option, "number", [], 250, "infinity");
         }
       }
 
@@ -474,6 +477,118 @@ const UC = (element, settings) => {
     carousel.trailingDot.css("left", "0px");
   }
 
+  function stopAnimations() {
+    // HOVER OVER ELEMENT
+    if (options.stopOnHover) {
+      carousel.el.mouseenter(function () {
+        if (options.continuousLoop) {
+          carousel.scrollArea.stop(true);
+        } else if (options.autoSlide) {
+          clearInterval(carousel.scrollInterval);
+        }
+      });
+
+      carousel.el.mouseleave(function () {
+        if (options.continuousLoop) {
+          infiniteScroll();
+        } else if (options.autoSlide) {
+          carousel.scrollInterval = setInterval(function () {
+            scrollActions(true);
+          }, carousel.speed + options.autoSlideDelay);
+        }
+      });
+    }
+
+    // DOCUMENT HIDDEN
+
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) {
+        if (options.continuousLoop) {
+          carousel.scrollArea.stop(true);
+        } else if (options.autoSlide) {
+          clearInterval(carousel.scrollInterval);
+        }
+      } else {
+        if (options.continuousLoop) {
+          infiniteScroll();
+        } else if (options.autoSlide) {
+          carousel.scrollInterval = setInterval(function () {
+            scrollActions(true);
+          }, carousel.speed + options.autoSlideDelay);
+        }
+      }
+    });
+
+    // OUT OF VIEW
+
+    let isScrolling;
+    carousel.wasVis = false;
+
+    ["scroll", "load", "resize"].forEach(function (e) {
+      window.addEventListener(e, function () {
+        window.clearTimeout(isScrolling);
+
+        isScrolling = setTimeout(function () {
+          carousel.position = carousel.el[0].getBoundingClientRect();
+          carousel.visible =
+            carousel.position.top >= -carousel.el.height() &&
+            carousel.position.bottom <=
+              window.innerHeight + carousel.el.height();
+
+          if (options.continuousLoop) {
+            if (!carousel.visible) {
+              carousel.scrollArea.stop(true);
+              carousel.wasVis = true;
+            } else {
+              if (carousel.wasVis) {
+                infiniteScroll();
+                carousel.wasVis = false;
+              }
+            }
+          } else if (options.autoSlide) {
+            if (!carousel.visible) {
+              clearInterval(carousel.scrollInterval);
+              carousel.wasVis = true;
+            } else {
+              if (carousel.wasVis) {
+                carousel.scrollInterval = setInterval(function () {
+                  scrollActions(true);
+                }, carousel.speed + options.autoSlideDelay);
+                carousel.wasVis = false;
+              }
+            }
+          }
+        }, 66);
+      });
+    });
+
+    $(window).on("load scroll", function () {
+      clearTimeout($.data(this, "scrollTimer"));
+      $.data(
+        this,
+        "scrollTimer",
+        setTimeout(function () {
+          if (options.continuousLoop) {
+          } else if (options.autoSlide) {
+          }
+
+          // function isInViewport(element) {
+          //   const rect = element;
+          //   return (
+          //     rect.top >= -$(element).height() &&
+          //     rect.bottom <= window.innerHeight + $(element).height()
+          //   );
+          // }
+          // if (isInViewport(carousel.el[0])) {
+          //   infiniteScroll();
+          // } else {
+          //   carousel.scrollArea.stop(true);
+          // }
+        }, 250)
+      );
+    });
+  }
+
   function initActions() {
     if (!options.continuousLoop) {
       // Scroll on click
@@ -486,45 +601,19 @@ const UC = (element, settings) => {
 
         // Stop auto slide on arrow click
         if (options.autoSlide) {
-          clearInterval(scrollInterval);
-          scrollInterval = setInterval(function () {
+          clearInterval(carousel.scrollInterval);
+          carousel.scrollInterval = setInterval(function () {
             scrollActions(true);
           }, carousel.speed + options.autoSlideDelay);
         }
       });
 
       // Auto slide
-      carousel.scrollInterval;
-      let { scrollInterval } = carousel;
       if (options.autoSlide) {
-        scrollInterval = setInterval(function () {
+        carousel.scrollInterval = setInterval(function () {
           scrollActions(true);
         }, carousel.speed + options.autoSlideDelay);
       }
-
-      // Stop auto slide on hover
-      if (options.autoSlide && options.stopOnHover) {
-        carousel.el.mouseover(function () {
-          clearInterval(scrollInterval);
-        });
-
-        carousel.el.mouseleave(function () {
-          scrollInterval = setInterval(function () {
-            scrollActions(true);
-          }, carousel.speed + options.autoSlideDelay);
-        });
-      }
-
-      // Stop auto slide on tab inactive
-      document.addEventListener("visibilitychange", function () {
-        if (!document.hidden) {
-          scrollInterval = setInterval(function () {
-            scrollActions(true);
-          }, carousel.speed + options.autoSlideDelay);
-        } else {
-          clearInterval(scrollInterval);
-        }
-      });
 
       // Mobile swipe to scroll
       if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
@@ -558,26 +647,6 @@ const UC = (element, settings) => {
     } else {
       responsiveAdjust();
       infiniteScroll();
-
-      // Stop continuousLoop on hover
-      if (options.stopOnHover) {
-        carousel.el.mouseenter(function () {
-          carousel.scrollArea.stop(true);
-        });
-
-        carousel.el.mouseleave(function () {
-          infiniteScroll();
-        });
-      }
-
-      // Stop continuous loop on tab inactive
-      document.addEventListener("visibilitychange", function () {
-        if (!document.hidden) {
-          infiniteScroll();
-        } else {
-          carousel.scrollArea.stop(true);
-        }
-      });
     }
 
     $(window).on("load resize", function () {
@@ -822,6 +891,7 @@ const UC = (element, settings) => {
     createCarousel();
     carouselOptions();
     initActions();
+    stopAnimations();
 
     console.log(_);
   }
@@ -832,15 +902,14 @@ const UC = (element, settings) => {
 };
 
 // const c1 = UC("#slider-1", {
-//   maxSlidesShown: 3,
-//   animationSpeed: 500,
-//   autoSlideDelay: 500,
-//   autoSlide: true,
+//   maxSlidesShown: 2,
+//   continuousLoop: true,
 // });
 // c1.init();
 
 // const c2 = UC("#slider-2", {
 //   maxSlidesShown: 3,
 //   itemsPerSlide: 2,
+//   autoSlide: true,
 // });
 // c2.init();
