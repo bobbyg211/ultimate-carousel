@@ -15,7 +15,7 @@ const UC = (element, settings) => {
     autoSlide: false,
     autoSlideDelay: 3000,
     continuousLoop: false,
-    continuousSpeed: 1,
+    continuousSpeed: 5,
     infiniteLoop: true,
     itemsPerSlide: 1,
     maxSlidesShown: 1,
@@ -64,10 +64,13 @@ const UC = (element, settings) => {
 
       // Auto Slide Delay
       if (key === "autoSlideDelay") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+        if (
+          (typeof value === "number" && value >= 500) ||
+          value === undefined
+        ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, "infinity");
+          errorHandler(option, "number", [], 500, "infinity");
         }
       }
 
@@ -486,7 +489,7 @@ const UC = (element, settings) => {
           clearInterval(scrollInterval);
           scrollInterval = setInterval(function () {
             scrollActions(true);
-          }, options.autoSlideDelay);
+          }, carousel.speed + options.autoSlideDelay);
         }
       });
 
@@ -496,7 +499,7 @@ const UC = (element, settings) => {
       if (options.autoSlide) {
         scrollInterval = setInterval(function () {
           scrollActions(true);
-        }, options.autoSlideDelay);
+        }, carousel.speed + options.autoSlideDelay);
       }
 
       // Stop auto slide on hover
@@ -508,7 +511,7 @@ const UC = (element, settings) => {
         carousel.el.mouseleave(function () {
           scrollInterval = setInterval(function () {
             scrollActions(true);
-          }, options.autoSlideDelay);
+          }, carousel.speed + options.autoSlideDelay);
         });
       }
 
@@ -517,7 +520,7 @@ const UC = (element, settings) => {
         if (!document.hidden) {
           scrollInterval = setInterval(function () {
             scrollActions(true);
-          }, options.autoSlideDelay);
+          }, carousel.speed + options.autoSlideDelay);
         } else {
           clearInterval(scrollInterval);
         }
@@ -830,6 +833,9 @@ const UC = (element, settings) => {
 
 // const c1 = UC("#slider-1", {
 //   maxSlidesShown: 3,
+//   animationSpeed: 500,
+//   autoSlideDelay: 500,
+//   autoSlide: true,
 // });
 // c1.init();
 
