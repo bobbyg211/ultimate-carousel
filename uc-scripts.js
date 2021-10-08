@@ -125,12 +125,19 @@ const UC = (element, settings) => {
         const numSlides = carousel.el.children().length;
 
         if (
-          (typeof value === "number" && value > 0 && value <= numSlides - 1) ||
+          (typeof value === "number" &&
+            value > 0 &&
+            value <= numSlides - 1 &&
+            value <= 5) ||
           value === undefined
         ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, numSlides - 1);
+          if (value > 5) {
+            errorHandler(option, "number", [], 1, 5);
+          } else {
+            errorHandler(option, "number", [], 1, numSlides - 1);
+          }
         }
       }
 
@@ -264,11 +271,17 @@ const UC = (element, settings) => {
     // BAD VALUE 'number'
     if (value < min || value > max) {
       if (key === "maxSlidesShown") {
-        let err = new Error(
-          `${key} must be greater than 0 and less than the total number of slides (${
-            max + 1
-          }).`
-        );
+        let err;
+        if (value > 5) {
+          err = new Error(`${key} can not be greater than 5.`);
+        } else {
+          err = new Error(
+            `${key} must be greater than 0 and less than the total number of slides (${
+              max + 1
+            }).`
+          );
+        }
+
         err.name = `Invalid Value '${key}: ${value}'`;
         throw err;
       } else if (key === "itemsPerSlide") {
@@ -815,24 +828,13 @@ const UC = (element, settings) => {
   };
 };
 
-const c1 = UC("#slider-1", {
-  maxSlidesShown: 1,
-  itemsPerSlide: 2,
-});
-c1.init();
+// const c1 = UC("#slider-1", {
+//   maxSlidesShown: 3,
+// });
+// c1.init();
 
-const c2 = UC("#slider-2", {
-  maxSlidesShown: 3,
-  itemsPerSlide: 3,
-});
-c2.init();
-
-/*
-
-maxSlidesShown = 3
-itemsPerSlide = 2
-slidesPerScroll = 2
-
-
-
-*/
+// const c2 = UC("#slider-2", {
+//   maxSlidesShown: 3,
+//   itemsPerSlide: 2,
+// });
+// c2.init();
