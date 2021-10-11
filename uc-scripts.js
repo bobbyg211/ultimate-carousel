@@ -561,32 +561,6 @@ const UC = (element, settings) => {
         }, 66);
       });
     });
-
-    $(window).on("load scroll", function () {
-      clearTimeout($.data(this, "scrollTimer"));
-      $.data(
-        this,
-        "scrollTimer",
-        setTimeout(function () {
-          if (options.continuousLoop) {
-          } else if (options.autoSlide) {
-          }
-
-          // function isInViewport(element) {
-          //   const rect = element;
-          //   return (
-          //     rect.top >= -$(element).height() &&
-          //     rect.bottom <= window.innerHeight + $(element).height()
-          //   );
-          // }
-          // if (isInViewport(carousel.el[0])) {
-          //   infiniteScroll();
-          // } else {
-          //   carousel.scrollArea.stop(true);
-          // }
-        }, 250)
-      );
-    });
   }
 
   function initActions() {
@@ -785,7 +759,7 @@ const UC = (element, settings) => {
 
     carousel.el
       .find(".uc--content")
-      .css("margin", `0 ${options.slideSpace / 2}`);
+      .css("margin", `0 ${options.slideSpace / 2}px`);
 
     carousel.afterSlides.each(function (i) {
       $(this).show();
@@ -901,15 +875,13 @@ const UC = (element, settings) => {
   };
 };
 
-// const c1 = UC("#slider-1", {
-//   maxSlidesShown: 2,
-//   continuousLoop: true,
-// });
-// c1.init();
+const c1 = UC("#slider-1", {
+  maxSlidesShown: 2,
+});
+c1.init();
 
-// const c2 = UC("#slider-2", {
-//   maxSlidesShown: 3,
-//   itemsPerSlide: 2,
-//   autoSlide: true,
-// });
-// c2.init();
+const c2 = UC("#slider-2", {
+  maxSlidesShown: 3,
+  itemsPerSlide: 2,
+});
+c2.init();
