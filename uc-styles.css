@@ -111,7 +111,8 @@
       #000 25% 75%,
       transparent 100%
     ),
-    linear-gradient(to right, transparent 13%, #000 16% 84%, transparent 87%);
+    linear-gradient(to right, transparent 90px, #000 120px),
+    linear-gradient(to left, transparent 90px, #000 120px);
   mask-size: 110% 110%;
   mask-position: center;
   mask-repeat: no-repeat;
