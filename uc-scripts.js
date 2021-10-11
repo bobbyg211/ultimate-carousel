@@ -652,19 +652,9 @@ const UC = (element, settings) => {
         pos = carousel.endingPos;
       }
 
-      let currSlide = carousel.el.find(
-        `.uc--slide:nth-child(${
-          carousel.counter + carousel.numVisibleBeforeChildren + 2
-        })`
-      );
-
-      const { left: toMove } = currSlide[0].getBoundingClientRect();
-
-      carousel.scrollLength = Math.ceil(toMove) - 50;
-
       carousel.scrollArea.animate(
         {
-          scrollLeft: `${direction ? "+" : "-"}=${carousel.scrollLength}`,
+          scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
         },
         carousel.speed
       );
@@ -885,13 +875,13 @@ const UC = (element, settings) => {
   };
 };
 
-// const c1 = UC("#slider-1", {
-//   maxSlidesShown: 2,
-// });
-// c1.init();
+const c1 = UC("#slider-1", {
+  maxSlidesShown: 2,
+});
+c1.init();
 
-// const c2 = UC("#slider-2", {
-//   maxSlidesShown: 3,
-//   itemsPerSlide: 2,
-// });
-// c2.init();
+const c2 = UC("#slider-2", {
+  maxSlidesShown: 3,
+  itemsPerSlide: 2,
+});
+c2.init();
