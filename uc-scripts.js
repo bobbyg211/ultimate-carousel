@@ -324,7 +324,7 @@ const UC = (element, settings) => {
     const origSlides = carousel.el
       .find("> *")
       .map(function () {
-        return $(this)[0].innerHTML;
+        return $(this)[0].outerHTML;
       })
       .get();
 
@@ -875,10 +875,10 @@ const UC = (element, settings) => {
   };
 };
 
-// const c1 = UC("#slider-1", {
-//   maxSlidesShown: 2,
-// });
-// c1.init();
+const c1 = UC("#slider-1", {
+  maxSlidesShown: 2,
+});
+c1.init();
 
 // const c2 = UC("#slider-2", {
 //   maxSlidesShown: 3,
