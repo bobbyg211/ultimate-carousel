@@ -561,32 +561,6 @@ const UC = (element, settings) => {
         }, 66);
       });
     });
-
-    $(window).on("load scroll", function () {
-      clearTimeout($.data(this, "scrollTimer"));
-      $.data(
-        this,
-        "scrollTimer",
-        setTimeout(function () {
-          if (options.continuousLoop) {
-          } else if (options.autoSlide) {
-          }
-
-          // function isInViewport(element) {
-          //   const rect = element;
-          //   return (
-          //     rect.top >= -$(element).height() &&
-          //     rect.bottom <= window.innerHeight + $(element).height()
-          //   );
-          // }
-          // if (isInViewport(carousel.el[0])) {
-          //   infiniteScroll();
-          // } else {
-          //   carousel.scrollArea.stop(true);
-          // }
-        }, 250)
-      );
-    });
   }
 
   function initActions() {
@@ -678,9 +652,19 @@ const UC = (element, settings) => {
         pos = carousel.endingPos;
       }
 
+      let currSlide = carousel.el.find(
+        `.uc--slide:nth-child(${
+          carousel.counter + carousel.numVisibleBeforeChildren + 2
+        })`
+      );
+
+      const { left: toMove } = currSlide[0].getBoundingClientRect();
+
+      carousel.scrollLength = Math.ceil(toMove) - 50;
+
       carousel.scrollArea.animate(
         {
-          scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
+          scrollLeft: `${direction ? "+" : "-"}=${carousel.scrollLength}`,
         },
         carousel.speed
       );

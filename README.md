@@ -4,6 +4,8 @@
 
 ### CRITICAL
 
+### - set minimum sliderSpace to 20 (for the sake of the mask)
+
 ### - Cross-browser compatibility
 
 ### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA

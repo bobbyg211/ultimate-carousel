@@ -82,11 +82,14 @@
 
 @media (min-width: 768px) {
   .uc--wrapper {
-    padding: 0 50px;
+    margin: 0 50px;
   }
-  .uc--wrapper .uc--indicators .uc--scroll-right,
+  .uc--wrapper .uc--indicators .uc--scroll-right {
+    transform: translate(100%, -50%);
+  }
+
   .uc--wrapper .uc--indicators .uc--scroll-left {
-    transform: translate(0, -50%);
+    transform: translate(-100%, -50%);
   }
 }
 
@@ -157,6 +160,6 @@ html {
 
 .uc--wrapper .uc--scroll-area .uc--slide .uc--content {
   padding: 20px;
-  border: 1px solid black;
   box-shadow: 28px 28px 100px rgb(13 39 80 / 16%);
+  box-shadow: inset 0 0 0 4px coral;
 }
