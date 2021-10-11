@@ -116,7 +116,7 @@
   mask-size: 110% 110%;
   mask-position: center;
   mask-repeat: no-repeat;
-  mask-composite: source-in;
+  mask-composite: intersect;
   -webkit-mask: linear-gradient(
       to bottom,
       transparent 0%,
@@ -129,6 +129,7 @@
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-composite: source-in;
+  -webkit-mask-composite: intersect;
 }
 
 /* !!! REMOVE LATER !!! */
