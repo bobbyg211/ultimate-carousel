@@ -4,6 +4,8 @@
 
 ### CRITICAL
 
+### - Cross-browser compatibility
+
 ### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
 
 ### - ~Stop all animations when not in viewport~
@@ -39,6 +41,8 @@
 ### - Tabbed slider option
 
 ## Errors
+
+### - ~slideSpace is not applied on external pages (even the default)~
 
 ### - ~slider breaks when animationSpeed and autoSlideDelay are the same. What will happen if autoSlideDelay is less than animationSpeed?~
 

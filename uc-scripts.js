@@ -785,7 +785,7 @@ const UC = (element, settings) => {
 
     carousel.el
       .find(".uc--content")
-      .css("margin", `0 ${options.slideSpace / 2}`);
+      .css("margin", `0 ${options.slideSpace / 2}px`);
 
     carousel.afterSlides.each(function (i) {
       $(this).show();
@@ -901,15 +901,13 @@ const UC = (element, settings) => {
   };
 };
 
-// const c1 = UC("#slider-1", {
-//   maxSlidesShown: 2,
-//   continuousLoop: true,
-// });
-// c1.init();
+const c1 = UC("#slider-1", {
+  maxSlidesShown: 2,
+});
+c1.init();
 
-// const c2 = UC("#slider-2", {
-//   maxSlidesShown: 3,
-//   itemsPerSlide: 2,
-//   autoSlide: true,
-// });
-// c2.init();
+const c2 = UC("#slider-2", {
+  maxSlidesShown: 3,
+  itemsPerSlide: 2,
+});
+c2.init();
