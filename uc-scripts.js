@@ -882,18 +882,3 @@ const UC = (element, settings) => {
     init: init,
   };
 };
-
-// $(".uc").each(function (i) {
-//   UC(this).init();
-// });
-
-// const c1 = UC("#slider-1", {
-//   navigationDirection: "two-way",
-// });
-// c1.init();
-
-// const c2 = UC("#slider-2", {
-//   maxSlidesShown: 3,
-//   itemsPerSlide: 2,
-// });
-// c2.init();
