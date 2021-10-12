@@ -328,6 +328,14 @@ const UC = (element, settings) => {
       })
       .get();
 
+    if (options.navigationDirection === "two-way") {
+      carousel.el.css("margin", "0 50px");
+    } else if (options.navigationDirection === "one-way") {
+      carousel.el.css("margin", "0 50px 0 0");
+    } else if (options.navigationDirection === "none") {
+      carousel.el.css("margin", "0");
+    }
+
     carousel.el.empty();
     carousel.el.append(`<div class="uc--scroll-area"></div>`);
 
@@ -880,8 +888,7 @@ const UC = (element, settings) => {
 // });
 
 // const c1 = UC("#slider-1", {
-//   maxSlidesShown: 1,
-//   itemsPerSlide: 9,
+//   navigationDirection: "two-way",
 // });
 // c1.init();
 
