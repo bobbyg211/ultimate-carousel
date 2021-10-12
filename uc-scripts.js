@@ -178,6 +178,15 @@ const UC = (element, settings) => {
         }
       }
 
+      // Slide Space
+      if (key === "slideSpace") {
+        if ((typeof value === "number" && value > 0) || value === undefined) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "number", [], 1, "infinity");
+        }
+      }
+
       // Stop On Hover
       if (key === "stopOnHover") {
         if (typeof value === "boolean" || value === undefined) {
