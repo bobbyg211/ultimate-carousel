@@ -107,11 +107,12 @@ const UC = (element, settings) => {
       // itemsPerSlide
       if (key === "itemsPerSlide") {
         const numSlides = carousel.el.children().length;
+        const maxSlides = optObj.maxSlidesShown || defaults.maxSlidesShown;
 
         if (
           (typeof value === "number" &&
             value > 0 &&
-            value <= Math.ceil(numSlides / optObj.maxSlidesShown - 1)) ||
+            value <= Math.ceil(numSlides / maxSlides - 1)) ||
           value === undefined
         ) {
           validOpts[key] = value;
@@ -121,7 +122,7 @@ const UC = (element, settings) => {
             "number",
             [],
             1,
-            Math.ceil(numSlides / optObj.maxSlidesShown - 1)
+            Math.ceil(numSlides / maxSlides - 1)
           );
         }
       }
@@ -129,7 +130,6 @@ const UC = (element, settings) => {
       // maxSlidesShown
       if (key === "maxSlidesShown") {
         const numSlides = carousel.el.children().length;
-
         if (
           (typeof value === "number" &&
             value > 0 &&
@@ -880,7 +880,8 @@ const UC = (element, settings) => {
 // });
 
 // const c1 = UC("#slider-1", {
-//   maxSlidesShown: 2,
+//   maxSlidesShown: 1,
+//   itemsPerSlide: 9,
 // });
 // c1.init();
 
