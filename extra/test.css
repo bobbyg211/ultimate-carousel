@@ -930,6 +930,12 @@ html {
       "main other";
   }
 
+  .featured-content-wrapper .content-area .posts-area .posts.watch .other {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 25px;
+  }
+
   .featured-content-wrapper
     .content-area
     .posts-area

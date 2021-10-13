@@ -329,6 +329,7 @@ const UC = (element, settings) => {
   // Create Carousel
 
   function createCarousel() {
+    const allClasses = carousel.el[0].className;
     carousel.el.addClass("uc--wrapper");
     const origSlides = carousel.el
       .find("> *")
@@ -357,7 +358,7 @@ const UC = (element, settings) => {
       carousel.el
         .find(".uc--scroll-area")
         .append(
-          `<div class="uc--slide real"><div class="uc--content"></div></div>`
+          `<div class="uc--slide real"><div class="uc--content ${allClasses}"></div></div>`
         );
 
       for (let j = numUsed; j < numUsed + options.itemsPerSlide; j++) {
