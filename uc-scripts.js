@@ -636,11 +636,10 @@ const UC = (element, settings) => {
         }
       }
     } else {
-      responsiveAdjust();
       infiniteScroll();
     }
 
-    $(window).on("load resize", function () {
+    $(window).on("resize", function () {
       responsiveAdjust();
     });
   }
@@ -876,18 +875,44 @@ const UC = (element, settings) => {
     }
   }
 
+  function respondToVisibility(element, callback) {
+    var options = {
+      root: document.documentElement,
+    };
+
+    var observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        callback(entry.intersectionRatio > 0);
+      });
+    }, options);
+
+    observer.observe(element);
+  }
+
   // Initialize
 
   function init() {
-    createCarousel();
-    carouselOptions();
-    initActions();
-    stopAnimations();
+    let rendered = false;
+    respondToVisibility(carousel.el[0], (visible) => {
+      setTimeout(function () {
+        if (visible && !rendered) {
+          createCarousel();
+          carouselOptions();
+          responsiveAdjust();
+          initActions();
+          stopAnimations();
 
-    console.log(_);
+          console.log(_);
+
+          rendered = true;
+        }
+      }, 1000);
+    });
   }
 
   return {
     init: init,
+    options,
+    carousel,
   };
 };
