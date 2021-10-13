@@ -894,19 +894,17 @@ const UC = (element, settings) => {
   function init() {
     let rendered = false;
     respondToVisibility(carousel.el[0], (visible) => {
-      setTimeout(function () {
-        if (visible && !rendered) {
-          createCarousel();
-          carouselOptions();
-          responsiveAdjust();
-          initActions();
-          stopAnimations();
+      if (visible && !rendered) {
+        createCarousel();
+        carouselOptions();
+        responsiveAdjust();
+        initActions();
+        stopAnimations();
 
-          console.log(_);
+        console.log(_);
 
-          rendered = true;
-        }
-      }, 1000);
+        rendered = true;
+      }
     });
   }
 
