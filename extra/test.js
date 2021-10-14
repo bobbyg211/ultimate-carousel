@@ -52,7 +52,7 @@ $(
 
 const c1 = UC("#slider-1", {
   navigationDirection: "two-way",
-  maxSlidesShown: 2,
+  maxSlidesShown: 1,
 });
 c1.init();
 
@@ -62,11 +62,28 @@ c1.init();
 // });
 // c2.init();
 
-const watchRecent = UC(".featured-content-wrapper .posts.watch .other", {
+// UC Code
+const recentOther = UC(".featured-content-wrapper .posts.recent > .other", {
+  itemsPerSlide: 2,
+  navigationDirection: "one-way",
+  stopOnHover: false,
+});
+recentOther.init();
+
+const watchOther = UC(".featured-content-wrapper .posts.watch > .other", {
   itemsPerSlide: 4,
   navigationDirection: "one-way",
-  slideSpace: 20,
 });
-watchRecent.init();
+watchOther.init();
 
-// console.log(watchRecent);
+const listenOther = UC(".featured-content-wrapper .posts.listen > .other", {
+  itemsPerSlide: 4,
+  navigationDirection: "one-way",
+});
+listenOther.init();
+
+const readOther = UC(".featured-content-wrapper .posts.read > .other", {
+  itemsPerSlide: 4,
+  navigationDirection: "one-way",
+});
+readOther.init();

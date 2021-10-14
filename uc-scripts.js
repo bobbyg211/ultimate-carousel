@@ -358,7 +358,9 @@ const UC = (element, settings) => {
       carousel.el
         .find(".uc--scroll-area")
         .append(
-          `<div class="uc--slide real"><div class="uc--content ${allClasses}"></div></div>`
+          `<div class="uc--slide real ${
+            i - 1 < options.maxSlidesShown ? "active" : ""
+          }"><div class="uc--content ${allClasses}"></div></div>`
         );
 
       for (let j = numUsed; j < numUsed + options.itemsPerSlide; j++) {
@@ -397,6 +399,7 @@ const UC = (element, settings) => {
             .clone()
             .removeClass("real")
             .addClass("copy after")
+            .removeClass("active")
         );
     }
 
@@ -739,6 +742,18 @@ const UC = (element, settings) => {
               if (!direction && carousel.counter !== 0) {
                 carousel.counter--;
               }
+
+              console.log("Carousel", carousel.scrollArea.scrollLeft());
+              carousel.el.find(".uc--slide").each(function (i) {
+                let elLeftPos = $(this).position().left;
+                console.log(`Slide #${i + 1}`, elLeftPos);
+                console.log(carousel.scrollArea.width());
+                if (elLeftPos > 0 && elLeftPos < carousel.scrollArea.width()) {
+                  $(this).addClass("active");
+                } else {
+                  $(this).removeClass("active");
+                }
+              });
 
               carousel.rightArrow.css("pointer-events", "auto");
               carousel.leftArrow.css("pointer-events", "auto");
