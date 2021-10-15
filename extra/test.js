@@ -73,7 +73,7 @@ $(
 const recentOther = UC(".featured-content-wrapper .posts.recent > .other", {
   itemsPerSlide: 2,
   navigationDirection: "one-way",
-  stopOnHover: false,
+  mobileHideArrows: true,
 });
 recentOther.init();
 

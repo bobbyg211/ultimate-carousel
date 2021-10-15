@@ -1,34 +1,60 @@
-const UC = (element, settings) => {
+const UC = (element, desktopOptions, mobileOptions) => {
   // GLOBAL variables
-  settings = settings || {};
   const _this = this;
   _this._ = {};
   const { _ } = _this;
   _.carousel = {};
   const { carousel } = _;
   carousel.el = $(element);
+  const mobile = $(window).width() < 768 ? true : false;
+  const desktop = $(window).width() > 767 ? true : false;
 
   // Options setup & validation
 
-  defaults = {
-    animationSpeed: 500,
-    autoSlide: false,
-    autoSlideDelay: 3000,
-    continuousLoop: false,
-    continuousSpeed: 5,
-    infiniteLoop: true,
-    itemsPerSlide: 1,
-    mobileItemsPerSlide: 1,
-    maxSlidesShown: 1,
-    mobileSwipeToScroll: true,
-    mobileHideArrows: false,
-    navigationDirection: "two-way",
-    showIndicatorDots: true,
-    stopOnHover: true,
-    slideSpace: 20,
-  };
+  let defaults;
+  desktopOptions = desktopOptions || {};
+  mobileOptions = mobileOptions || {};
 
-  validated = optValidation(settings);
+  if (desktop) {
+    defaults = {
+      animationSpeed: 500,
+      autoSlide: false,
+      autoSlideDelay: 3000,
+      continuousLoop: false,
+      continuousSpeed: 5,
+      infiniteLoop: true,
+      itemsPerSlide: 1,
+      maxSlidesShown: 1,
+      navigationDirection: "two-way",
+      showIndicatorDots: true,
+      stopOnHover: true, // unique
+      slideSpace: 20,
+    };
+  } else {
+    defaults = {
+      animationSpeed: 500,
+      autoSlide: false,
+      autoSlideDelay: 3000,
+      continuousLoop: false,
+      continuousSpeed: 5,
+      infiniteLoop: true,
+      itemsPerSlide: 1,
+      maxSlidesShown: 1,
+      swipeToScroll: true, // unique
+      navigationDirection: "none",
+      showIndicatorDots: true,
+      slideSpace: 20,
+    };
+  }
+
+  let validated;
+
+  if (desktop) {
+    validated = optValidation(desktopOptions);
+  } else {
+    validated = optValidation(mobileOptions);
+  }
+
   required = optRequirements(validated);
 
   _.options = {
@@ -128,29 +154,6 @@ const UC = (element, settings) => {
         }
       }
 
-      // mobileItemsPerSlide
-      if (key === "mobileItemsPerSlide") {
-        const numSlides = carousel.el.children().length;
-        const maxSlides = optObj.maxSlidesShown || defaults.maxSlidesShown;
-
-        if (
-          (typeof value === "number" &&
-            value > 0 &&
-            value <= Math.ceil(numSlides / maxSlides - 1)) ||
-          value === undefined
-        ) {
-          validOpts[key] = value;
-        } else {
-          errorHandler(
-            option,
-            "number",
-            [],
-            1,
-            Math.ceil(numSlides / maxSlides - 1)
-          );
-        }
-      }
-
       // maxSlidesShown
       if (key === "maxSlidesShown") {
         const numSlides = carousel.el.children().length;
@@ -168,15 +171,6 @@ const UC = (element, settings) => {
           } else {
             errorHandler(option, "number", [], 1, numSlides - 1);
           }
-        }
-      }
-
-      // mobileSwipeToScroll
-      if (key === "mobileSwipeToScroll") {
-        if (typeof value === "boolean" || value === undefined) {
-          validOpts[key] = value;
-        } else {
-          errorHandler(option, "boolean");
         }
       }
 
@@ -252,7 +246,9 @@ const UC = (element, settings) => {
         if (optObj[key]) {
           requiredOpts["infiniteLoop"] = true;
           requiredOpts["showIndicatorDots"] = false;
-          requiredOpts["mobileSwipeToScroll"] = false;
+          if (mobile) {
+            requiredOpts["swipeToScroll"] = false;
+          }
         }
       }
 
@@ -374,13 +370,12 @@ const UC = (element, settings) => {
     carousel.el.append(`<div class="uc--scroll-area"></div>`);
 
     let numUsed = 0;
-    let itemsPerSlide;
-    if ($(window).width() > 767) {
-      itemsPerSlide = options.itemsPerSlide;
-    } else {
-      itemsPerSlide = options.mobileItemsPerSlide;
-    }
-    for (let i = 1; i <= Math.ceil(origSlides.length / itemsPerSlide); i++) {
+
+    for (
+      let i = 1;
+      i <= Math.ceil(origSlides.length / options.itemsPerSlide);
+      i++
+    ) {
       carousel.el
         .find(".uc--scroll-area")
         .append(
@@ -389,13 +384,13 @@ const UC = (element, settings) => {
           }"><div class="uc--content ${allClasses}"></div></div>`
         );
 
-      for (let j = numUsed; j < numUsed + itemsPerSlide; j++) {
+      for (let j = numUsed; j < numUsed + options.itemsPerSlide; j++) {
         const currSlide = carousel.el.find(
           `.uc--slide:nth-child(${i}) .uc--content`
         );
         currSlide.append(origSlides[j]);
       }
-      numUsed += itemsPerSlide;
+      numUsed += options.itemsPerSlide;
     }
 
     // Add slide copies
@@ -637,7 +632,7 @@ const UC = (element, settings) => {
       }
 
       // Mobile swipe to scroll
-      if ($(window).width() <= 767 && options.mobileSwipeToScroll) {
+      if (options.swipeToScroll) {
         carousel.el[0].addEventListener(
           "touchstart",
           function (event) {
@@ -827,12 +822,6 @@ const UC = (element, settings) => {
 
     carouselOptions();
     initPos(options.maxSlidesShown);
-
-    if ($(window).width() <= 767 && options.mobileHideArrows) {
-      carousel.arrows.hide();
-    } else {
-      carousel.arrows.show();
-    }
 
     // FOUR slides
     if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {

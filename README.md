@@ -14,15 +14,15 @@
 
 ### - double check all options are being validated
 
+### - ~recode UC class two accept two sets of options, desktop and mobile~
+
 ### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
 
 ### OPTIONAL
 
 ### - option to show a bit of the next/previous slide
 
-### - responsiveAdjust itemsPerSlide on screen resize (currently only works on load)
-
-### - responsiveAdjust active slide visible checker on screen resize (currently only works on load)
+### - responsiveAdjust between desktop and mobile options on screen resize (currently only works on load)
 
 ### - ADVANCED ADA compliance
 
