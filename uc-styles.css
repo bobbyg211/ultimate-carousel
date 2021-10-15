@@ -15,7 +15,6 @@
 
 .uc--wrapper .uc--scroll-area {
   display: flex;
-  align-items: flex-start;
   overflow: hidden;
 }
 
@@ -100,22 +99,25 @@
 
 .uc--wrapper .uc--scroll-area {
   position: relative;
+  padding: 7vw;
+  margin: -7vw;
 
-  padding: 100px;
-  margin: -100px;
-
-  mask-image: linear-gradient(to bottom, transparent 0px, #000 90px),
-    linear-gradient(to top, transparent 0px, #000 90px),
-    linear-gradient(to right, transparent 90px, #000 120px),
-    linear-gradient(to left, transparent 90px, #000 120px);
-  mask-size: 110% 110%;
+  mask-image: linear-gradient(to bottom, transparent 0vw, #000 6.5vw),
+    linear-gradient(to top, transparent 0vw, #000 6.5vw),
+    linear-gradient(to right, transparent 6.5vw, #000 8vw),
+    linear-gradient(to left, transparent 6.5vw, #000 8vw);
+  mask-size: 100% 100%;
   mask-position: center;
   mask-repeat: no-repeat;
   mask-composite: intersect;
-  -webkit-mask: linear-gradient(to bottom, transparent 0px, #000 90px),
-    linear-gradient(to top, transparent 0px, #000 90px),
-    linear-gradient(to right, transparent 90px, #000 120px),
-    linear-gradient(to left, transparent 90px, #000 120px);
+  mask: linear-gradient(to bottom, transparent 0vw, #000 6.5vw),
+    linear-gradient(to top, transparent 0vw, #000 6.5vw),
+    linear-gradient(to right, transparent 6.5vw, #000 8vw),
+    linear-gradient(to left, transparent 6.5vw, #000 8vw);
+  -webkit-mask: linear-gradient(to bottom, transparent 0vw, #000 6.5vw),
+    linear-gradient(to top, transparent 0vw, #000 6.5vw),
+    linear-gradient(to right, transparent 6.5vw, #000 8vw),
+    linear-gradient(to left, transparent 6.5vw, #000 8vw);
   -webkit-mask-size: 100%;
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;

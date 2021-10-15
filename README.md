@@ -4,17 +4,25 @@
 
 ### CRITICAL
 
+### - ~include itemsPerSlide in the responsiveAdjustments~
+
+### - HIGH level of mobile responsiveness
+
 ### - set minimum sliderSpace to 20 (for the sake of the mask)
 
 ### - Cross-browser compatibility
 
+### - double check all options are being validated
+
 ### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
 
-### - ~Stop all animations when not in viewport~
-
-### - ~Basic ADA compliance~
-
 ### OPTIONAL
+
+### - option to show a bit of the next/previous slide
+
+### - responsiveAdjust itemsPerSlide on screen resize (currently only works on load)
+
+### - responsiveAdjust active slide visible checker on screen resize (currently only works on load)
 
 ### - ADVANCED ADA compliance
 
@@ -22,17 +30,9 @@
 
 ### - Clickable indicators
 
-### - ~Adjust slide sizes on screen resize~
-
-### - ~set maxSlidesShown to be no greater than numChildren - 1~
-
 ### - Slides scrolled per click option
 
-### - ~Error Handling~
-
 ### - Complete Warning Handling
-
-### - ~Space between slides~
 
 ### - Lazy image loading option
 
@@ -43,11 +43,3 @@
 ### - Tabbed slider option
 
 ## Errors
-
-### - ~slideSpace is not applied on external pages (even the default)~
-
-### - ~slider breaks when animationSpeed and autoSlideDelay are the same. What will happen if autoSlideDelay is less than animationSpeed?~
-
-### - ~slider breaks if no object is provided to the options argument~
-
-### - ~Auto slider freaks out if I leave the page and come back later~
