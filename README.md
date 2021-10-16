@@ -26,7 +26,7 @@
 
 ### OPTIONAL
 
-### - limit perimeter slide percentage shown to half the width of the next slide
+### - limit perimeter slide percentage shown to the width of the next slide
 
 ### - option to show a bit of the next/previous slide
 

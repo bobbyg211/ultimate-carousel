@@ -84,22 +84,43 @@ const recentOther = UC(
 );
 recentOther.init();
 
-const watchOther = UC(".featured-content-wrapper .posts.watch > .other", {
-  itemsPerSlide: 4,
-  navigationDirection: "one-way",
-});
+const watchOther = UC(
+  ".featured-content-wrapper .posts.watch > .other",
+  {
+    itemsPerSlide: 4,
+    navigationDirection: "one-way",
+  },
+  {
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+  }
+);
 watchOther.init();
 
-const listenOther = UC(".featured-content-wrapper .posts.listen > .other", {
-  itemsPerSlide: 4,
-  navigationDirection: "one-way",
-});
+const listenOther = UC(
+  ".featured-content-wrapper .posts.listen > .other",
+  {
+    itemsPerSlide: 4,
+    navigationDirection: "one-way",
+  },
+  {
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+  }
+);
 listenOther.init();
 
-const readOther = UC(".featured-content-wrapper .posts.read > .other", {
-  itemsPerSlide: 4,
-  navigationDirection: "one-way",
-});
+const readOther = UC(
+  ".featured-content-wrapper .posts.read > .other",
+  {
+    itemsPerSlide: 4,
+    navigationDirection: "one-way",
+  },
+  {
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+  }
+);
 readOther.init();
 
 // ======================
@@ -148,7 +169,12 @@ $(
 // UC Code
 const strategicPartners = UC(
   ".featured-partners-offers-wrapper .content-area .partners-offers-area .partners .items",
-  { itemsPerSlide: 5, navigationDirection: "one-way" }
+  { itemsPerSlide: 5, navigationDirection: "one-way" },
+  {
+    itemsPerSlide: 3,
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 20,
+  }
 );
 strategicPartners.init();
 
@@ -158,11 +184,11 @@ const communityPartners = UC(
 );
 communityPartners.init();
 
-// const offers = UC(
-//   ".featured-partners-offers-wrapper .content-area .partners-offers-area .offers .items",
-//   { itemsPerSlide: 5, navigationDirection: "one-way" }
-// );
-// offers.init();
+const offers = UC(
+  ".featured-partners-offers-wrapper .content-area .partners-offers-area .offers .items",
+  { itemsPerSlide: 3, navigationDirection: "one-way" }
+);
+offers.init();
 
 // UC Code
 const podcastsBanner = UC(
