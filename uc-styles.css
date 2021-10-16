@@ -24,6 +24,10 @@
   flex-basis: 100%;
 }
 
+.uc--wrapper .uc--scroll-area .uc--slide .uc--content {
+  height: 100%;
+}
+
 .uc--wrapper .uc--scroll-area .uc--slide:not(.active) {
   pointer-events: none;
 }

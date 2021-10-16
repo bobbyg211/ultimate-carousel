@@ -25,12 +25,13 @@ const UC = (element, desktopOptions, mobileOptions) => {
       infiniteLoop: true,
       itemsPerSlide: 1,
       maxSlidesShown: 1,
-      navigationDirection: "two-way",
+      navigationDirection: "two-way", // two-way, one-way, none
       showPerimeterSlides: "none", // left, right, none, both
       perimeterSlideVisibleAmount: 40,
       showIndicatorDots: true,
       stopOnHover: true, // unique
       slideSpace: 20,
+      responsiveness: true,
     };
   } else {
     defaults = {
@@ -42,12 +43,13 @@ const UC = (element, desktopOptions, mobileOptions) => {
       infiniteLoop: true,
       itemsPerSlide: 1,
       maxSlidesShown: 1,
-      navigationDirection: "none",
+      navigationDirection: "none", // two-way, one-way, none
       showPerimeterSlides: "both", // left, right, none, both
       perimeterSlideVisibleAmount: 80,
       showIndicatorDots: true,
       slideSpace: 20,
       swipeToScroll: true, // unique
+      responsiveness: true,
     };
   }
 
@@ -241,6 +243,15 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Stop On Hover
       if (key === "stopOnHover") {
+        if (typeof value === "boolean" || value === undefined) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "boolean");
+        }
+      }
+
+      // Responsiveness
+      if (key === "responsiveness") {
         if (typeof value === "boolean" || value === undefined) {
           validOpts[key] = value;
         } else {
@@ -901,84 +912,86 @@ const UC = (element, desktopOptions, mobileOptions) => {
     carouselOptions(slideOffset);
     initPos(options.maxSlidesShown);
 
-    // FOUR slides
-    if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {
-      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 4}%`);
+    if (options.responsiveness) {
+      // FOUR slides
+      if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {
+        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 4}%`);
 
-      carousel.afterSlides.each(function (i) {
-        if (i >= 4) {
-          $(this).hide();
-        }
-      });
+        carousel.afterSlides.each(function (i) {
+          if (i >= 4) {
+            $(this).hide();
+          }
+        });
 
-      $(carousel.beforeSlides.get().reverse()).each(function (i) {
-        if (i >= 4) {
-          $(this).hide();
-        }
-      });
+        $(carousel.beforeSlides.get().reverse()).each(function (i) {
+          if (i >= 4) {
+            $(this).hide();
+          }
+        });
 
-      carouselOptions(slideOffset);
-      initPos(4);
-    }
+        carouselOptions(slideOffset);
+        initPos(4);
+      }
 
-    // THREE slides
-    if ($(window).width() <= 1200 && options.maxSlidesShown > 3) {
-      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 3}%`);
+      // THREE slides
+      if ($(window).width() <= 1200 && options.maxSlidesShown > 3) {
+        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 3}%`);
 
-      carousel.afterSlides.each(function (i) {
-        if (i >= 3) {
-          $(this).hide();
-        }
-      });
+        carousel.afterSlides.each(function (i) {
+          if (i >= 3) {
+            $(this).hide();
+          }
+        });
 
-      $(carousel.beforeSlides.get().reverse()).each(function (i) {
-        if (i >= 3) {
-          $(this).hide();
-        }
-      });
+        $(carousel.beforeSlides.get().reverse()).each(function (i) {
+          if (i >= 3) {
+            $(this).hide();
+          }
+        });
 
-      carouselOptions(slideOffset);
-      initPos(3);
-    }
+        carouselOptions(slideOffset);
+        initPos(3);
+      }
 
-    // TWO slides
-    if ($(window).width() <= 1000 && options.maxSlidesShown > 2) {
-      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 2}%`);
+      // TWO slides
+      if ($(window).width() <= 1000 && options.maxSlidesShown > 2) {
+        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 2}%`);
 
-      carousel.afterSlides.each(function (i) {
-        if (i >= 2) {
-          $(this).hide();
-        }
-      });
+        carousel.afterSlides.each(function (i) {
+          if (i >= 2) {
+            $(this).hide();
+          }
+        });
 
-      $(carousel.beforeSlides.get().reverse()).each(function (i) {
-        if (i >= 2) {
-          $(this).hide();
-        }
-      });
+        $(carousel.beforeSlides.get().reverse()).each(function (i) {
+          if (i >= 2) {
+            $(this).hide();
+          }
+        });
 
-      carouselOptions(slideOffset);
-      initPos(2);
-    }
+        carouselOptions(slideOffset);
+        initPos(2);
+      }
 
-    // ONE slide
-    if ($(window).width() <= 767 && options.maxSlidesShown > 1) {
-      carousel.el.find(".uc--slide").css("flex-basis", `${100 / 1}%`);
+      // ONE slide
+      if ($(window).width() <= 767 && options.maxSlidesShown > 1) {
+        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 1}%`);
 
-      carousel.afterSlides.each(function (i) {
-        if (i >= 1) {
-          $(this).hide();
-        }
-      });
+        carousel.afterSlides.each(function (i) {
+          if (i >= 1) {
+            $(this).hide();
+          }
+        });
 
-      $(carousel.beforeSlides.get().reverse()).each(function (i) {
-        if (i >= 1) {
-          $(this).hide();
-        }
-      });
+        $(carousel.beforeSlides.get().reverse()).each(function (i) {
+          if (i >= 1) {
+            $(this).hide();
+          }
+        });
 
-      carouselOptions(slideOffset);
-      initPos(1);
+        carouselOptions(slideOffset);
+        initPos(1);
+      }
     }
   }
 

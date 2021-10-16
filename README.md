@@ -4,17 +4,13 @@
 
 ### CRITICAL
 
-### - Have desktop options override mobile defaults if manually set by user? If a mobile option is different than a desktop default, then mobile takes precedence?
-
-### - ~include itemsPerSlide in the responsiveAdjustments~
-
 ### - HIGH level of mobile responsiveness
+
+### - ~allow mobile responsiveness to be turned off~
 
 ### - set minimum sliderSpace to 20 (for the sake of the mask)
 
 ### - Cross-browser compatibility
-
-### - throw error if non existent option is entered
 
 ### - double check all options are being validated properly
 
@@ -25,6 +21,14 @@
 ### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
 
 ### OPTIONAL
+
+### - allow for more than 5 maxSlidesShown
+
+### - Have desktop options override mobile defaults if manually set by user? If a mobile option is different than a desktop default, then mobile takes precedence?
+
+### - tweak active state for perimeter slides to be more accurate
+
+### - throw error if non existent option is entered
 
 ### - limit perimeter slide percentage shown to the width of the next slide
 
