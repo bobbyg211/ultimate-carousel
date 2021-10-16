@@ -6,8 +6,9 @@
 
 const c1 = UC("#slider-1", {
   navigationDirection: "two-way",
-  maxSlidesShown: 4,
+  maxSlidesShown: 3,
   itemsPerSlide: 2,
+  showPerimeterSlides: "none",
 });
 c1.init();
 
@@ -70,11 +71,17 @@ $(
 });
 
 // UC Code
-const recentOther = UC(".featured-content-wrapper .posts.recent > .other", {
-  itemsPerSlide: 2,
-  navigationDirection: "one-way",
-  mobileHideArrows: true,
-});
+const recentOther = UC(
+  ".featured-content-wrapper .posts.recent > .other",
+  {
+    itemsPerSlide: 2,
+    navigationDirection: "one-way",
+  },
+  {
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+  }
+);
 recentOther.init();
 
 const watchOther = UC(".featured-content-wrapper .posts.watch > .other", {

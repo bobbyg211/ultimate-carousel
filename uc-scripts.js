@@ -26,6 +26,8 @@ const UC = (element, desktopOptions, mobileOptions) => {
       itemsPerSlide: 1,
       maxSlidesShown: 1,
       navigationDirection: "two-way",
+      showPerimeterSlides: "none", // left, right, none, both
+      perimeterSlideVisibleAmount: 40,
       showIndicatorDots: true,
       stopOnHover: true, // unique
       slideSpace: 20,
@@ -40,10 +42,12 @@ const UC = (element, desktopOptions, mobileOptions) => {
       infiniteLoop: true,
       itemsPerSlide: 1,
       maxSlidesShown: 1,
-      swipeToScroll: true, // unique
       navigationDirection: "none",
+      showPerimeterSlides: "both", // left, right, none, both
+      perimeterSlideVisibleAmount: 80,
       showIndicatorDots: true,
       slideSpace: 20,
+      swipeToScroll: true, // unique
     };
   }
 
@@ -196,6 +200,36 @@ const UC = (element, desktopOptions, mobileOptions) => {
         }
       }
 
+      // Show Perimeter Slides
+      if (key === "showPerimeterSlides") {
+        if (
+          value === undefined ||
+          (typeof value === "string" &&
+            (value === "left" ||
+              value === "right" ||
+              value === "none" ||
+              value === "both"))
+        ) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "string", [
+            "two-way",
+            "one-way",
+            "none",
+            "both",
+          ]);
+        }
+      }
+
+      // Perimeter slide visible amount
+      if (key === "perimeterSlideVisibleAmount") {
+        if ((typeof value === "number" && value > 0) || value === undefined) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "number", [], 1, "infinity");
+        }
+      }
+
       // Slide Space
       if (key === "slideSpace") {
         if ((typeof value === "number" && value > 0) || value === undefined) {
@@ -281,6 +315,13 @@ const UC = (element, desktopOptions, mobileOptions) => {
       // Show Indicator Dots
       if (key === "showIndicatorDots") {
         // NONE
+      }
+
+      // Show Perimeter Slides
+      if (key === "showPerimeter slides") {
+        if (optObj[key] === "both") {
+          requiredOpts["navigationDirection"] = "two-way";
+        }
       }
 
       // Stop On Hover
@@ -396,10 +437,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
     // Add slide copies
     if (options.infiniteLoop) {
       carousel.firstSlides = carousel.el.find(
-        ".uc--slide:nth-child(-n+" + options.maxSlidesShown + ")"
+        ".uc--slide:nth-child(-n+" + (options.maxSlidesShown + 1) + ")"
       );
       carousel.lastSlides = carousel.el.find(
-        ".uc--slide:nth-last-child(-n+" + options.maxSlidesShown + ")"
+        ".uc--slide:nth-last-child(-n+" + (options.maxSlidesShown + 1) + ")"
       );
 
       if (!options.continuousLoop) {
@@ -470,7 +511,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
     }
   }
 
-  function carouselOptions() {
+  function carouselOptions(slideOffset) {
     carousel.scrollArea = carousel.el.find(".uc--scroll-area");
     carousel.allSlides = carousel.el.find(".uc--slide");
     carousel.afterSlides = carousel.el.find(".uc--slide.copy.after");
@@ -497,9 +538,33 @@ const UC = (element, desktopOptions, mobileOptions) => {
     carousel.counter = 0;
 
     carousel.scrollDist = carousel.scrollWidth - carousel.clientWidth;
-    carousel.startingPos =
-      carousel.slideWidth * carousel.numVisibleBeforeChildren;
-    carousel.endingPos = carousel.scrollDist - carousel.slideWidth;
+
+    if (options.showPerimeterSlides === "both") {
+      carousel.startingPos =
+        carousel.slideWidth * carousel.numVisibleBeforeChildren -
+        slideOffset * (options.maxSlidesShown / 2);
+      carousel.endingPos =
+        carousel.scrollDist -
+        carousel.slideWidth * 2 +
+        slideOffset * (options.maxSlidesShown / 2);
+    } else if (options.showPerimeterSlides === "right") {
+      carousel.startingPos =
+        carousel.slideWidth * carousel.numVisibleBeforeChildren;
+      carousel.endingPos =
+        carousel.scrollDist -
+        carousel.slideWidth * 2 +
+        slideOffset * options.maxSlidesShown;
+    } else if (options.showPerimeterSlides === "left") {
+      carousel.startingPos =
+        carousel.slideWidth * carousel.numVisibleBeforeChildren -
+        slideOffset * options.maxSlidesShown;
+      carousel.endingPos = carousel.scrollDist - carousel.slideWidth * 2;
+    } else if (options.showPerimeterSlides === "none") {
+      carousel.startingPos =
+        carousel.slideWidth * carousel.numVisibleBeforeChildren;
+      carousel.endingPos = carousel.scrollDist - carousel.slideWidth * 2;
+    }
+
     carousel.dotActiveWidth =
       8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
 
@@ -804,9 +869,22 @@ const UC = (element, desktopOptions, mobileOptions) => {
   // Responsiveness
 
   function responsiveAdjust() {
+    let slideOffset = 0;
+    if (options.showPerimeterSlides === "both") {
+      slideOffset = options.perimeterSlideVisibleAmount;
+    } else if (
+      options.showPerimeterSlides === "right" ||
+      options.showPerimeterSlides === "left"
+    ) {
+      slideOffset = options.perimeterSlideVisibleAmount / 2;
+    }
+
     carousel.el
       .find(".uc--slide")
-      .css("flex-basis", `${100 / options.maxSlidesShown}%`);
+      .css(
+        "flex-basis",
+        `calc(${100 / options.maxSlidesShown}% - ${slideOffset}px)`
+      );
 
     carousel.el
       .find(".uc--content")
@@ -820,7 +898,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
       $(this).show();
     });
 
-    carouselOptions();
+    carouselOptions(slideOffset);
     initPos(options.maxSlidesShown);
 
     // FOUR slides
@@ -839,7 +917,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         }
       });
 
-      carouselOptions();
+      carouselOptions(slideOffset);
       initPos(4);
     }
 
@@ -859,7 +937,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         }
       });
 
-      carouselOptions();
+      carouselOptions(slideOffset);
       initPos(3);
     }
 
@@ -879,7 +957,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         }
       });
 
-      carouselOptions();
+      carouselOptions(slideOffset);
       initPos(2);
     }
 
@@ -899,7 +977,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         }
       });
 
-      carouselOptions();
+      carouselOptions(slideOffset);
       initPos(1);
     }
   }

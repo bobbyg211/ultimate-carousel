@@ -4,6 +4,8 @@
 
 ### CRITICAL
 
+### - Have desktop options override mobile defaults if manually set by user? If a mobile option is different than a desktop default, then mobile takes precedence?
+
 ### - ~include itemsPerSlide in the responsiveAdjustments~
 
 ### - HIGH level of mobile responsiveness
@@ -12,13 +14,19 @@
 
 ### - Cross-browser compatibility
 
-### - double check all options are being validated
+### - throw error if non existent option is entered
+
+### - double check all options are being validated properly
+
+### - double check all logical required options are being set
 
 ### - ~recode UC class two accept two sets of options, desktop and mobile~
 
 ### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
 
 ### OPTIONAL
+
+### - limit perimeter slide percentage shown to half the width of the next slide
 
 ### - option to show a bit of the next/previous slide
 
