@@ -4,13 +4,19 @@
 //   UC(this).init();
 // });
 
-const c1 = UC("#slider-1", {
-  navigationDirection: "two-way",
-  maxSlidesShown: 3,
-  itemsPerSlide: 2,
-  showPerimeterSlides: "none",
-  responsiveness: false,
-});
+const c1 = UC(
+  "#slider-1",
+  {
+    navigationDirection: "two-way",
+    maxSlidesShown: 3,
+    itemsPerSlide: 2,
+    responsiveness: false,
+  },
+  {
+    showPerimeterSlides: "both",
+    maxSlidesShown: 1,
+  }
+);
 c1.init();
 
 // const c2 = UC("#slider-2", {

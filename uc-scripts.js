@@ -11,6 +11,14 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
   // Options setup & validation
 
+  // Defaults logic steps
+  // 1. Check if desktop or mobile
+  // 2. Set appropriate defaults based on screen size
+  // 3. If desktop, validate desktop options and complete the setup
+  // 4. If mobile, validate any inputted desktop options and override mobile defaults
+  // 5. Then, validate any inputted mobile options and do a final override of any values set up to this point.
+  // 6. Setup complete.
+
   let defaults;
   desktopOptions = desktopOptions || {};
   mobileOptions = mobileOptions || {};
@@ -32,6 +40,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
       stopOnHover: true, // unique
       slideSpace: 20,
       responsiveness: true,
+      hideArrows: false,
     };
   } else {
     defaults = {
@@ -43,13 +52,14 @@ const UC = (element, desktopOptions, mobileOptions) => {
       infiniteLoop: true,
       itemsPerSlide: 1,
       maxSlidesShown: 1,
-      navigationDirection: "none", // two-way, one-way, none
-      showPerimeterSlides: "both", // left, right, none, both
+      navigationDirection: "two-way", // two-way, one-way, none
+      showPerimeterSlides: "none", // left, right, none, both
       perimeterSlideVisibleAmount: 80,
       showIndicatorDots: true,
       slideSpace: 20,
       swipeToScroll: true, // unique
       responsiveness: true,
+      hideArrows: false,
     };
   }
 
@@ -58,7 +68,11 @@ const UC = (element, desktopOptions, mobileOptions) => {
   if (desktop) {
     validated = optValidation(desktopOptions);
   } else {
-    validated = optValidation(mobileOptions);
+    let allOptions = {
+      ...desktopOptions,
+      ...mobileOptions,
+    };
+    validated = optValidation(allOptions);
   }
 
   required = optRequirements(validated);
@@ -258,6 +272,15 @@ const UC = (element, desktopOptions, mobileOptions) => {
           errorHandler(option, "boolean");
         }
       }
+
+      // Hide Arrows
+      if (key === "hideArrows") {
+        if (typeof value === "boolean" || value === undefined) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "boolean");
+        }
+      }
     });
 
     return validOpts;
@@ -329,14 +352,20 @@ const UC = (element, desktopOptions, mobileOptions) => {
       }
 
       // Show Perimeter Slides
-      if (key === "showPerimeter slides") {
+      if (key === "showPerimeterSlides") {
         if (optObj[key] === "both") {
           requiredOpts["navigationDirection"] = "two-way";
+          requiredOpts["hideArrows"] = true;
         }
       }
 
       // Stop On Hover
       if (key === "stopOnHover") {
+        // NONE
+      }
+
+      // Hide Arrows
+      if (key === "hideArrows") {
         // NONE
       }
     });
@@ -888,6 +917,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
       options.showPerimeterSlides === "left"
     ) {
       slideOffset = options.perimeterSlideVisibleAmount / 2;
+    }
+
+    if (options.hideArrows) {
+      carousel.arrows.hide();
     }
 
     carousel.el

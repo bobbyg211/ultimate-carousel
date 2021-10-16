@@ -6,8 +6,6 @@
 
 ### - HIGH level of mobile responsiveness
 
-### - ~allow mobile responsiveness to be turned off~
-
 ### - set minimum sliderSpace to 20 (for the sake of the mask)
 
 ### - Cross-browser compatibility
@@ -23,8 +21,6 @@
 ### OPTIONAL
 
 ### - allow for more than 5 maxSlidesShown
-
-### - Have desktop options override mobile defaults if manually set by user? If a mobile option is different than a desktop default, then mobile takes precedence?
 
 ### - tweak active state for perimeter slides to be more accurate
 
