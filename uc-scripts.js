@@ -248,10 +248,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Slide Space
       if (key === "slideSpace") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+        if ((typeof value === "number" && value > 20) || value === undefined) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "number", [], 1, "infinity");
+          errorHandler(option, "number", [], 20, "infinity");
         }
       }
 
@@ -440,10 +440,14 @@ const UC = (element, desktopOptions, mobileOptions) => {
       .get();
 
     if (options.navigationDirection === "two-way") {
-      carousel.el.css("margin", "0 50px");
+      carousel.el.css("margin", "0 30px");
     } else if (options.navigationDirection === "one-way") {
-      carousel.el.css("margin", "0 50px 0 0");
+      carousel.el.css("margin", "0 30px 0 0");
     } else if (options.navigationDirection === "none") {
+      carousel.el.css("margin", "0");
+    }
+
+    if (options.hideArrows) {
       carousel.el.css("margin", "0");
     }
 
@@ -948,7 +952,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
     if (options.responsiveness) {
       // FOUR slides
       if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {
-        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 4}%`);
+        carousel.el
+          .find(".uc--slide")
+          .css("flex-basis", `calc(${100 / 4}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 4) {
@@ -968,7 +974,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // THREE slides
       if ($(window).width() <= 1200 && options.maxSlidesShown > 3) {
-        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 3}%`);
+        carousel.el
+          .find(".uc--slide")
+          .css("flex-basis", `calc(${100 / 3}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 3) {
@@ -988,7 +996,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // TWO slides
       if ($(window).width() <= 1000 && options.maxSlidesShown > 2) {
-        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 2}%`);
+        carousel.el
+          .find(".uc--slide")
+          .css("flex-basis", `calc(${100 / 2}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 2) {
@@ -1008,7 +1018,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // ONE slide
       if ($(window).width() <= 767 && options.maxSlidesShown > 1) {
-        carousel.el.find(".uc--slide").css("flex-basis", `${100 / 1}%`);
+        carousel.el
+          .find(".uc--slide")
+          .css("flex-basis", `calc(${100 / 1}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 1) {

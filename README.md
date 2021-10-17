@@ -50,4 +50,6 @@
 
 ### - Tabbed slider option
 
+### - Arrows options
+
 ## Errors
