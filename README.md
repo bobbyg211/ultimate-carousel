@@ -4,9 +4,7 @@
 
 ### CRITICAL
 
-### - HIGH level of mobile responsiveness
-
-### - set minimum sliderSpace to 20 (for the sake of the mask)
+### - ~set minimum sliderSpace to 20 (for the sake of the mask)~
 
 ### - Cross-browser compatibility
 
@@ -19,6 +17,8 @@
 ### - FINAL THOROUGH TESTING & CLEANUP FOR FIRST STABLE BETA
 
 ### OPTIONAL
+
+### - allow for multiple sets of sliders to be created with the same options
 
 ### - allow for more than 5 maxSlidesShown
 
