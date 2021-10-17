@@ -11,14 +11,6 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
   // Options setup & validation
 
-  // Defaults logic steps
-  // 1. Check if desktop or mobile
-  // 2. Set appropriate defaults based on screen size
-  // 3. If desktop, validate desktop options and complete the setup
-  // 4. If mobile, validate any inputted desktop options and override mobile defaults
-  // 5. Then, validate any inputted mobile options and do a final override of any values set up to this point.
-  // 6. Setup complete.
-
   let defaults;
   desktopOptions = desktopOptions || {};
   mobileOptions = mobileOptions || {};
