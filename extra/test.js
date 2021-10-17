@@ -27,17 +27,65 @@ c1.init();
 
 // =========================
 // UC Code
-// const sponsorSpots = UC(
-//   ".podcasts [class*='recent-episodes-wrapper'] .podcasts-list .podcast .posts-area .posts-list",
-//   {
-//     maxSlidesShown: 1,
-//     itemsPerSlide: 3,
-//     navigationDirection: "one-way",
-//   },
-//   {
-//     showPerimeterSlides: "right",
-//     maxSlidesShown: 1,
-//     hideArrows: true,
-//   }
-// );
-// sponsorSpots.init();
+// UC Code
+const recentOther = UC(
+  ".featured-content-wrapper .posts.recent > .other",
+  {
+    navigationDirection: "one-way",
+    itemsPerSlide: 2,
+  },
+  {
+    hideArrows: true,
+    itemsPerSlide: 1,
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+  }
+);
+recentOther.init();
+
+const watchOther = UC(
+  ".featured-content-wrapper .posts.watch > .other",
+  {
+    itemsPerSlide: 4,
+    navigationDirection: "one-way",
+    slideSpace: 60,
+  },
+  {
+    hideArrows: true,
+    itemsPerSlide: 1,
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+    slideSpace: 25,
+  }
+);
+watchOther.init();
+
+const listenOther = UC(
+  ".featured-content-wrapper .posts.listen > .other",
+  {
+    navigationDirection: "one-way",
+    itemsPerSlide: 4,
+  },
+  {
+    hideArrows: true,
+    itemsPerSlide: 1,
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+  }
+);
+listenOther.init();
+
+const readOther = UC(
+  ".featured-content-wrapper .posts.read > .other",
+  {
+    navigationDirection: "one-way",
+    itemsPerSlide: 4,
+  },
+  {
+    hideArrows: true,
+    itemsPerSlide: 1,
+    showPerimeterSlides: "right",
+    perimeterSlideVisibleAmount: 200,
+  }
+);
+readOther.init();

@@ -1074,10 +1074,23 @@ const UC = (element, desktopOptions, mobileOptions) => {
     respondToVisibility(carousel.el[0], (visible) => {
       if (visible && !rendered) {
         respondToMutation(carousel.el[0], (mutations) => {
-          carouselOptions();
-          responsiveAdjust();
-          initActions();
-          stopAnimations();
+          let allImagesLoaded = false;
+
+          const images = carousel.el[0].querySelectorAll("img");
+          for (let image of images) {
+            if (image.complete && image.naturalHeight !== 0) {
+              allImagesLoaded = true;
+            } else {
+              allImagesLoaded = false;
+            }
+          }
+
+          if (allImagesLoaded) {
+            carouselOptions();
+            responsiveAdjust();
+            initActions();
+            stopAnimations();
+          }
         });
 
         createCarousel();
