@@ -1046,46 +1046,17 @@ const UC = (element, desktopOptions, mobileOptions) => {
     observer.observe(element);
   }
 
-  function respondToMutation(element, callback) {
-    const config = {
-      attributes: false,
-      childList: true,
-      characterData: false,
-      subtree: true,
-    };
-
-    var observer = new MutationObserver(callback);
-
-    observer.observe(element, config);
-  }
-
   // Initialize
 
   function init() {
     let rendered = false;
     respondToVisibility(carousel.el[0], (visible) => {
       if (visible && !rendered) {
-        respondToMutation(carousel.el[0], (mutations) => {
-          let allImagesLoaded = false;
-
-          const images = carousel.el[0].querySelectorAll("img");
-          for (let image of images) {
-            if (image.complete && image.naturalHeight !== 0) {
-              allImagesLoaded = true;
-            } else {
-              allImagesLoaded = false;
-            }
-          }
-
-          if (allImagesLoaded) {
-            carouselOptions();
-            responsiveAdjust();
-            initActions();
-            stopAnimations();
-          }
-        });
-
         createCarousel();
+        carouselOptions();
+        responsiveAdjust();
+        initActions();
+        stopAnimations();
 
         console.log(_);
 

@@ -12,6 +12,18 @@ Currently the only stable release is v.0.1.0-beta.
 
 ### CRITICAL
 
+- Double check mobile perimeter slides
+
+- Check navigation direction is changing arrows and functioning properly, alongside options like hideArrows and showPerimeterSlides
+
+- Check maxSlidesShown is accurate for regular and continuousSlide
+
+- Allow for the creation of custom default property sets
+
+- Make sure mobile options are loading properly on every page load/refresh
+
+- Instead of render prevention if maxSlidesShown > numChildren, simply align side by side, hide arrows and dots, and throw a warning
+
 ### OPTIONAL
 
 - ADVANCED ADA compliance
