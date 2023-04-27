@@ -38,11 +38,11 @@ Currently the only stable release is v.0.1.0-beta.
 
 - Tabbed slider layout
 
-- Slides scrolled per click option
+- ~~Slides scrolled per click option~~
 
 - Clickable indicator dots
 
-- Arrow types options
+- ~~Arrow types options~~
 
 - Indicator dots style options
 
@@ -52,8 +52,6 @@ Currently the only stable release is v.0.1.0-beta.
 
 - Lazy image loading option
 
-- Allow for sets of carousels to be created with the same options
-
 - Allow for more than 5 maxSlidesShown
 
 - Tweak active state for perimeter slides to be more accurate
@@ -62,6 +60,8 @@ Currently the only stable release is v.0.1.0-beta.
 
 - Limit perimeter slide percentage shown to the width of the next slide
 
-- ResponsiveAdjust between desktop and mobile options on screen resize (currently only works on load)
+- ~~ResponsiveAdjust between desktop and mobile options on screen resize (currently only works on load)~~
+
+- Disable faded mask option
 
 ## Errors
