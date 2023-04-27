@@ -1,3 +1,6 @@
+import leftArrowIcon from "./images/grey-arrow-left.svg";
+import rightArrowIcon from "./images/grey-arrow-right.svg";
+
 const UC = (element, desktopOptions, mobileOptions) => {
   // GLOBAL variables
   const _this = this;
@@ -34,8 +37,8 @@ const UC = (element, desktopOptions, mobileOptions) => {
       responsiveness: true,
       hideArrows: false,
       arrowSize: 25,
-      leftArrow: "./images/grey-arrow-left.svg",
-      rightArrow: "./images/grey-arrow-right.svg",
+      leftArrow: `${leftArrowIcon}`,
+      rightArrow: `${rightArrowIcon}`,
     };
   } else {
     defaults = {
@@ -56,8 +59,8 @@ const UC = (element, desktopOptions, mobileOptions) => {
       responsiveness: true,
       hideArrows: false,
       arrowSize: 25,
-      leftArrow: "./images/grey-arrow-left.svg",
-      rightArrow: "./images/grey-arrow-right.svg",
+      leftArrow: `${leftArrowIcon}`,
+      rightArrow: `${rightArrowIcon}`,
     };
   }
 
