@@ -64,4 +64,6 @@ Currently the only stable release is v.0.1.0-beta.
 
 - Disable faded mask option
 
+- Update errorHandler for things like valid image URLs and valid color codes
+
 ## Errors

@@ -29,6 +29,8 @@ const UC = (element, desktopOptions, mobileOptions) => {
       showPerimeterSlides: "none", // left, right, none, both
       perimeterSlideVisibleAmount: 40,
       showIndicatorDots: true,
+      indicatorDotColor: "#c4c4c4", // unique
+      indicatorDotActiveColor: "#1ca39c", // unique
       stopOnHover: true, // unique
       slideSpace: 20,
       responsiveness: true,
@@ -203,6 +205,24 @@ const UC = (element, desktopOptions, mobileOptions) => {
         }
       }
 
+      // Indicator Dot Color
+      if (key === "indicatorDotColor") {
+        if (value === undefined || typeof value === "string") {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "string", ["Hex code"]);
+        }
+      }
+
+      // Indicator Dot Active Color
+      if (key === "indicatorDotActiveColor") {
+        if (value === undefined || typeof value === "string") {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "string", ["Hex code"]);
+        }
+      }
+
       // Show Perimeter Slides
       if (key === "showPerimeterSlides") {
         if (
@@ -354,6 +374,16 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Show Indicator Dots
       if (key === "showIndicatorDots") {
+        // NONE
+      }
+
+      // Indicator Dot Color
+      if (key === "indicatorDotColor") {
+        // NONE
+      }
+
+      // Indicator Dot Active Color
+      if (key === "indicatorDotActiveColor") {
         // NONE
       }
 
@@ -546,8 +576,8 @@ const UC = (element, desktopOptions, mobileOptions) => {
       ${
         options.showIndicatorDots
           ? `<div class="uc--dots">
-      <span class="uc--dot active trailing"></span>
-      <span class="uc--dot active leading"></span>
+      <span class="uc--dot active trailing" style="${options.indicatorDotActiveColor}"></span>
+      <span class="uc--dot active leading" style="${options.indicatorDotActiveColor}"></span>
     </div>`
           : ""
       }
@@ -558,7 +588,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
       carousel.el.append(indicators);
 
       for (let i = 0; i < carousel.el.find(".uc--slide.real").length; i++) {
-        carousel.el.find(".uc--dots").append("<span class='uc--dot'></span>");
+        carousel.el
+          .find(".uc--dots")
+          .append(`<span class="uc--dot" style="${options.indicatorDotColor}"></span>`);
       }
     }
   }
