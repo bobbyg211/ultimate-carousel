@@ -85,10 +85,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Animation Speed
       if (key === "animationSpeed") {
-        if (
-          (typeof value === "number" && value >= 250) ||
-          value === undefined
-        ) {
+        if ((typeof value === "number" && value >= 250) || value === undefined) {
           validOpts[key] = value;
         } else {
           errorHandler(option, "number", [], 250, "infinity");
@@ -106,10 +103,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Auto Slide Delay
       if (key === "autoSlideDelay") {
-        if (
-          (typeof value === "number" && value >= 500) ||
-          value === undefined
-        ) {
+        if ((typeof value === "number" && value >= 500) || value === undefined) {
           validOpts[key] = value;
         } else {
           errorHandler(option, "number", [], 500, "infinity");
@@ -156,13 +150,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         ) {
           validOpts[key] = value;
         } else {
-          errorHandler(
-            option,
-            "number",
-            [],
-            1,
-            Math.ceil(numSlides / maxSlides - 1)
-          );
+          errorHandler(option, "number", [], 1, Math.ceil(numSlides / maxSlides - 1));
         }
       }
 
@@ -170,10 +158,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
       if (key === "maxSlidesShown") {
         const numSlides = carousel.el.children().length;
         if (
-          (typeof value === "number" &&
-            value > 0 &&
-            value <= numSlides - 1 &&
-            value <= 5) ||
+          (typeof value === "number" && value > 0 && value <= numSlides - 1 && value <= 5) ||
           value === undefined
         ) {
           validOpts[key] = value;
@@ -213,19 +198,11 @@ const UC = (element, desktopOptions, mobileOptions) => {
         if (
           value === undefined ||
           (typeof value === "string" &&
-            (value === "left" ||
-              value === "right" ||
-              value === "none" ||
-              value === "both"))
+            (value === "left" || value === "right" || value === "none" || value === "both"))
         ) {
           validOpts[key] = value;
         } else {
-          errorHandler(option, "string", [
-            "two-way",
-            "one-way",
-            "none",
-            "both",
-          ]);
+          errorHandler(option, "string", ["two-way", "one-way", "none", "both"]);
         }
       }
 
@@ -240,7 +217,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Slide Space
       if (key === "slideSpace") {
-        if ((typeof value === "number" && value > 20) || value === undefined) {
+        if ((typeof value === "number" && value >= 20) || value === undefined) {
           validOpts[key] = value;
         } else {
           errorHandler(option, "number", [], 20, "infinity");
@@ -384,9 +361,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
           err = new Error(`${key} can not be greater than 5.`);
         } else {
           err = new Error(
-            `${key} must be greater than 0 and less than the total number of slides (${
-              max + 1
-            }).`
+            `${key} must be greater than 0 and less than the total number of slides (${max + 1}).`
           );
         }
 
@@ -400,9 +375,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         throw err;
       } else {
         let err = new Error(
-          `${key} must be ${
-            max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`
-          }.`
+          `${key} must be ${max !== "infinity" ? `between ${min} and ${max}` : `at least ${min}`}.`
         );
         err.name = `Invalid Value '${key}: ${value}'`;
         throw err;
@@ -411,9 +384,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
     // BAD VALUE 'string'
     if (!array.includes(value)) {
-      let err = new Error(
-        `${key} must be one of the following values: '${array}'.`
-      );
+      let err = new Error(`${key} must be one of the following values: '${array}'.`);
       err.name = `Invalid Value '${key}: ${value}'`;
       throw err;
     }
@@ -448,11 +419,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
     let numUsed = 0;
 
-    for (
-      let i = 1;
-      i <= Math.ceil(origSlides.length / options.itemsPerSlide);
-      i++
-    ) {
+    for (let i = 1; i <= Math.ceil(origSlides.length / options.itemsPerSlide); i++) {
       carousel.el
         .find(".uc--scroll-area")
         .append(
@@ -462,9 +429,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         );
 
       for (let j = numUsed; j < numUsed + options.itemsPerSlide; j++) {
-        const currSlide = carousel.el.find(
-          `.uc--slide:nth-child(${i}) .uc--content`
-        );
+        const currSlide = carousel.el.find(`.uc--slide:nth-child(${i}) .uc--content`);
         currSlide.append(origSlides[j]);
       }
       numUsed += options.itemsPerSlide;
@@ -482,12 +447,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
       if (!options.continuousLoop) {
         carousel.el
           .find(".uc--scroll-area")
-          .prepend(
-            carousel.lastSlides
-              .clone()
-              .removeClass("real")
-              .addClass("copy before")
-          );
+          .prepend(carousel.lastSlides.clone().removeClass("real").addClass("copy before"));
       }
 
       carousel.el
@@ -567,9 +527,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
     carousel.slideWidth = carousel.el.find(".uc--slide.real").outerWidth();
     carousel.numChildren = carousel.el.find(".uc--slide").length;
     carousel.numRealChildren = carousel.el.find(".uc--slide.real").length;
-    carousel.numVisibleBeforeChildren = carousel.el.find(
-      ".uc--slide.before:visible"
-    ).length;
+    carousel.numVisibleBeforeChildren = carousel.el.find(".uc--slide.before:visible").length;
 
     carousel.counter = 0;
 
@@ -580,29 +538,22 @@ const UC = (element, desktopOptions, mobileOptions) => {
         carousel.slideWidth * carousel.numVisibleBeforeChildren -
         slideOffset * (options.maxSlidesShown / 2);
       carousel.endingPos =
-        carousel.scrollDist -
-        carousel.slideWidth * 2 +
-        slideOffset * (options.maxSlidesShown / 2);
+        carousel.scrollDist - carousel.slideWidth * 2 + slideOffset * (options.maxSlidesShown / 2);
     } else if (options.showPerimeterSlides === "right") {
-      carousel.startingPos =
-        carousel.slideWidth * carousel.numVisibleBeforeChildren;
+      carousel.startingPos = carousel.slideWidth * carousel.numVisibleBeforeChildren;
       carousel.endingPos =
-        carousel.scrollDist -
-        carousel.slideWidth * 2 +
-        slideOffset * options.maxSlidesShown;
+        carousel.scrollDist - carousel.slideWidth * 2 + slideOffset * options.maxSlidesShown;
     } else if (options.showPerimeterSlides === "left") {
       carousel.startingPos =
         carousel.slideWidth * carousel.numVisibleBeforeChildren -
         slideOffset * options.maxSlidesShown;
       carousel.endingPos = carousel.scrollDist - carousel.slideWidth * 2;
     } else if (options.showPerimeterSlides === "none") {
-      carousel.startingPos =
-        carousel.slideWidth * carousel.numVisibleBeforeChildren;
+      carousel.startingPos = carousel.slideWidth * carousel.numVisibleBeforeChildren;
       carousel.endingPos = carousel.scrollDist - carousel.slideWidth * 2;
     }
 
-    carousel.dotActiveWidth =
-      8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
+    carousel.dotActiveWidth = 8 * options.maxSlidesShown + 8 * (options.maxSlidesShown - 1);
 
     carousel.max = options.infiniteLoop
       ? carousel.numRealChildren
@@ -675,8 +626,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
           carousel.position = carousel.el[0].getBoundingClientRect();
           carousel.visible =
             carousel.position.top >= -carousel.el.height() &&
-            carousel.position.bottom <=
-              window.innerHeight + carousel.el.height();
+            carousel.position.bottom <= window.innerHeight + carousel.el.height();
 
           if (options.continuousLoop) {
             if (!carousel.visible) {
@@ -827,14 +777,8 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
               if (!direction) {
                 carousel.activeDots.css("margin-left", "5px");
-                const leadLeftPos = parseInt(
-                    $(carousel.leadingDot).css("left"),
-                    10
-                  ),
-                  trailLeftPos = parseInt(
-                    $(carousel.trailingDot).css("left"),
-                    10
-                  );
+                const leadLeftPos = parseInt($(carousel.leadingDot).css("left"), 10),
+                  trailLeftPos = parseInt($(carousel.trailingDot).css("left"), 10);
                 carousel.leadingDot.css("left", leadLeftPos - 16 + "px");
                 carousel.trailingDot.css("left", trailLeftPos - 16 + "px");
               }
@@ -845,18 +789,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
               }
 
               carousel.activeDots.each(function () {
-                if (
-                  parseInt($(this).css("left"), 10) ===
-                  carousel.carouselIndicsWidth + 16
-                ) {
-                  $(this).css(
-                    "left",
-                    "-" + (carousel.carouselIndicsWidth - 16) + "px"
-                  );
-                } else if (
-                  parseInt($(this).css("left"), 10) ===
-                  -carousel.carouselIndicsWidth
-                ) {
+                if (parseInt($(this).css("left"), 10) === carousel.carouselIndicsWidth + 16) {
+                  $(this).css("left", "-" + (carousel.carouselIndicsWidth - 16) + "px");
+                } else if (parseInt($(this).css("left"), 10) === -carousel.carouselIndicsWidth) {
                   $(this).css("left", carousel.carouselIndicsWidth + "px");
                 }
               });
@@ -908,10 +843,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
     let slideOffset = 0;
     if (options.showPerimeterSlides === "both") {
       slideOffset = options.perimeterSlideVisibleAmount;
-    } else if (
-      options.showPerimeterSlides === "right" ||
-      options.showPerimeterSlides === "left"
-    ) {
+    } else if (options.showPerimeterSlides === "right" || options.showPerimeterSlides === "left") {
       slideOffset = options.perimeterSlideVisibleAmount / 2;
     }
 
@@ -921,14 +853,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
     carousel.el
       .find(".uc--slide")
-      .css(
-        "flex-basis",
-        `calc(${100 / options.maxSlidesShown}% - ${slideOffset}px)`
-      );
+      .css("flex-basis", `calc(${100 / options.maxSlidesShown}% - ${slideOffset}px)`);
 
-    carousel.el
-      .find(".uc--content")
-      .css("margin", `0 ${options.slideSpace / 2}px`);
+    carousel.el.find(".uc--content").css("margin", `0 ${options.slideSpace / 2}px`);
 
     carousel.afterSlides.each(function (i) {
       $(this).show();
@@ -944,9 +871,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
     if (options.responsiveness) {
       // FOUR slides
       if ($(window).width() <= 1500 && options.maxSlidesShown > 4) {
-        carousel.el
-          .find(".uc--slide")
-          .css("flex-basis", `calc(${100 / 4}% - ${slideOffset}px)`);
+        carousel.el.find(".uc--slide").css("flex-basis", `calc(${100 / 4}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 4) {
@@ -966,9 +891,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // THREE slides
       if ($(window).width() <= 1200 && options.maxSlidesShown > 3) {
-        carousel.el
-          .find(".uc--slide")
-          .css("flex-basis", `calc(${100 / 3}% - ${slideOffset}px)`);
+        carousel.el.find(".uc--slide").css("flex-basis", `calc(${100 / 3}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 3) {
@@ -988,9 +911,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // TWO slides
       if ($(window).width() <= 1000 && options.maxSlidesShown > 2) {
-        carousel.el
-          .find(".uc--slide")
-          .css("flex-basis", `calc(${100 / 2}% - ${slideOffset}px)`);
+        carousel.el.find(".uc--slide").css("flex-basis", `calc(${100 / 2}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 2) {
@@ -1010,9 +931,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // ONE slide
       if ($(window).width() <= 767 && options.maxSlidesShown > 1) {
-        carousel.el
-          .find(".uc--slide")
-          .css("flex-basis", `calc(${100 / 1}% - ${slideOffset}px)`);
+        carousel.el.find(".uc--slide").css("flex-basis", `calc(${100 / 1}% - ${slideOffset}px)`);
 
         carousel.afterSlides.each(function (i) {
           if (i >= 1) {
