@@ -576,8 +576,8 @@ const UC = (element, desktopOptions, mobileOptions) => {
       ${
         options.showIndicatorDots
           ? `<div class="uc--dots">
-      <span class="uc--dot active trailing" style="${options.indicatorDotActiveColor}"></span>
-      <span class="uc--dot active leading" style="${options.indicatorDotActiveColor}"></span>
+      <span class="uc--dot active trailing" style="background: ${options.indicatorDotActiveColor};"></span>
+      <span class="uc--dot active leading" style="background: ${options.indicatorDotActiveColor};"></span>
     </div>`
           : ""
       }
@@ -590,7 +590,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
       for (let i = 0; i < carousel.el.find(".uc--slide.real").length; i++) {
         carousel.el
           .find(".uc--dots")
-          .append(`<span class="uc--dot" style="${options.indicatorDotColor}"></span>`);
+          .append(
+            `<span class="uc--dot" style="background: ${options.indicatorDotColor};"></span>`
+          );
       }
     }
   }
