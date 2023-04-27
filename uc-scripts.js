@@ -1,6 +1,3 @@
-import leftArrowIcon from "./images/grey-arrow-left.svg";
-import rightArrowIcon from "./images/grey-arrow-right.svg";
-
 const UC = (element, desktopOptions, mobileOptions) => {
   // GLOBAL variables
   const _this = this;
@@ -37,8 +34,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
       responsiveness: true,
       hideArrows: false,
       arrowSize: 25,
-      leftArrow: `${leftArrowIcon}`,
-      rightArrow: `${rightArrowIcon}`,
+      leftArrow:
+        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-left.svg",
+      rightArrow:
+        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-right.svg",
     };
   } else {
     defaults = {
@@ -59,8 +58,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
       responsiveness: true,
       hideArrows: false,
       arrowSize: 25,
-      leftArrow: `${leftArrowIcon}`,
-      rightArrow: `${rightArrowIcon}`,
+      leftArrow:
+        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-left.svg",
+      rightArrow:
+        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-right.svg",
     };
   }
 
