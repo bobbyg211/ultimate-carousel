@@ -33,6 +33,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
       slideSpace: 20,
       responsiveness: true,
       hideArrows: false,
+      arrowSize: 25,
+      leftArrow: "./images/grey-arrow-left.svg",
+      rightArrow: "./images/grey-arrow-right.svg",
     };
   } else {
     defaults = {
@@ -52,6 +55,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
       swipeToScroll: true, // unique
       responsiveness: true,
       hideArrows: false,
+      arrowSize: 25,
+      leftArrow: "./images/grey-arrow-left.svg",
+      rightArrow: "./images/grey-arrow-right.svg",
     };
   }
 
@@ -250,6 +256,33 @@ const UC = (element, desktopOptions, mobileOptions) => {
           errorHandler(option, "boolean");
         }
       }
+
+      // Arrow Size
+      if (key === "arrowSize") {
+        if ((typeof value === "number" && value >= 10) || value === undefined) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "number", [], 10, "infinity");
+        }
+      }
+
+      // Left Arrow
+      if (key === "leftArrow") {
+        if (value === undefined || typeof value === "string") {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "string", ["Image URL"]);
+        }
+      }
+
+      // Right Arrow
+      if (key === "rightArrow") {
+        if (value === undefined || typeof value === "string") {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "string", ["Image URL"]);
+        }
+      }
     });
 
     return validOpts;
@@ -335,6 +368,21 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Hide Arrows
       if (key === "hideArrows") {
+        // NONE
+      }
+
+      // Arrow Size
+      if (key === "arrowSize") {
+        // NONE
+      }
+
+      // Left Arrow
+      if (key === "arrowSize") {
+        // NONE
+      }
+
+      // Right Arrow
+      if (key === "arrowSize") {
         // NONE
       }
     });
@@ -470,8 +518,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
         options.navigationDirection === "two-way"
           ? `<button class="uc--scroll-left uc--arrow">
       <img
-        src="https://www.enrollify.org/hubfs/Empower/images/icons/grey-arrow-left.svg"
+        src="${options.leftArrow}"
         alt="Scroll Left"
+        width="${options.arrowSize}"
+        height="auto"
       />
     </button>`
           : ""
@@ -480,8 +530,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
         options.navigationDirection !== "none"
           ? `<button class="uc--scroll-right uc--arrow">
         <img
-          src="https://www.enrollify.org/hubfs/Empower/images/icons/grey-arrow-right.svg"
+          src="${options.rightArrow}"
           alt="Scroll Right"
+          width="${options.arrowSize}"
+          height="auto"
         />
       </button>`
           : ""
