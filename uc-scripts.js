@@ -17,6 +17,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
   if (desktop) {
     defaults = {
+      activeViewport: "all", // all, desktop, mobile // unique
       animationSpeed: 500,
       autoSlide: false,
       autoSlideDelay: 3000,
@@ -94,6 +95,19 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
     Object.entries(optObj).forEach((option) => {
       let [key, value] = option;
+
+      // Active Viewport
+      if (key === "activeViewport") {
+        if (
+          value === undefined ||
+          (typeof value === "string" &&
+            (value === "all" || value === "desktop" || value === "mobile"))
+        ) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "string", ["all", "desktop", "mobile"]);
+        }
+      }
 
       // Animation Speed
       if (key === "animationSpeed") {
@@ -317,6 +331,11 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
     Object.entries(optObj).forEach((option) => {
       let [key, value] = option;
+
+      // Active Viewport
+      if (key === "activeViewport") {
+        // NONE
+      }
 
       // Animation Speed
       if (key === "animationSpeed") {
@@ -1061,15 +1080,21 @@ const UC = (element, desktopOptions, mobileOptions) => {
     let rendered = false;
     respondToVisibility(carousel.el[0], (visible) => {
       if (visible && !rendered) {
-        createCarousel();
-        carouselOptions();
-        responsiveAdjust();
-        initActions();
-        stopAnimations();
+        if (
+          options.activeViewport === "all" ||
+          (desktop && options.activeViewport === "desktop") ||
+          (mobile && options.activeViewport === "mobile")
+        ) {
+          createCarousel();
+          carouselOptions();
+          responsiveAdjust();
+          initActions();
+          stopAnimations();
 
-        console.log(_);
+          console.log(_);
 
-        rendered = true;
+          rendered = true;
+        }
       }
     });
   }
