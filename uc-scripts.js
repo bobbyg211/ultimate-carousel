@@ -570,7 +570,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         options.navigationDirection === "two-way"
           ? `<button class="uc--scroll-left uc--arrow">
       <img
-        src="./icons/${options.leftArrow}.svg"
+        src="https://cdn.jsdelivr.net/gh/bobbyg211/ultimate-carousel/icons/${options.leftArrow}.svg"
         alt="Scroll Left"
         width="${options.arrowSize}"
         height="auto"
@@ -582,7 +582,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         options.navigationDirection !== "none"
           ? `<button class="uc--scroll-right uc--arrow">
         <img
-        src="./icons/${options.rightArrow}.svg"
+        src="https://cdn.jsdelivr.net/gh/bobbyg211/ultimate-carousel/icons/${options.rightArrow}.svg"
           alt="Scroll Right"
           width="${options.arrowSize}"
           height="auto"
