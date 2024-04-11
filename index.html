@@ -27,48 +27,7 @@
     ></script>
     <script src="./uc-scripts.js"></script>
     <script>
-      const test = UC(
-        ".slides",
-        {
-          animationSpeed: 500,
-          autoSlide: false,
-          autoSlideDelay: 3000,
-          continuousLoop: false,
-          continuousSpeed: 5,
-          infiniteLoop: true,
-          itemsPerSlide: 1,
-          maxSlidesShown: 1,
-          navigationDirection: "two-way", // two-way, one-way, none
-          showPerimeterSlides: "none", // left, right, none, both
-          perimeterSlideVisibleAmount: 40,
-          showIndicatorDots: true,
-
-          stopOnHover: true, // unique
-          slideSpace: 20,
-          responsiveness: true,
-          hideArrows: false,
-          arrowSize: 50,
-        },
-        {
-          animationSpeed: 500,
-          autoSlide: false,
-          autoSlideDelay: 3000,
-          continuousLoop: false,
-          continuousSpeed: 5,
-          infiniteLoop: true,
-          itemsPerSlide: 1,
-          maxSlidesShown: 1,
-          navigationDirection: "two-way", // two-way, one-way, none
-          showPerimeterSlides: "none", // left, right, none, both
-          perimeterSlideVisibleAmount: 80,
-          showIndicatorDots: true,
-          slideSpace: 20,
-          swipeToScroll: true, // unique
-          responsiveness: true,
-          hideArrows: false,
-          arrowSize: 50,
-        }
-      );
+      const test = UC(".slides", {});
       test.init();
     </script>
   </body>

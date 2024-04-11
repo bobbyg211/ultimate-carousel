@@ -33,21 +33,44 @@
   pointer-events: none;
 }
 
-.uc--wrapper .uc--indicators .uc--scroll-right,
-.uc--wrapper .uc--indicators .uc--scroll-left {
+.uc--wrapper .uc--indicators .uc--arrow {
   background: none;
   border: none;
-  position: absolute;
-  top: 50%;
   cursor: pointer;
 }
 
-.uc--wrapper .uc--indicators .uc--scroll-right {
-  right: 0;
+.uc--wrapper .uc--indicators.left-right .uc--scroll-left {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translate(-100%, -50%);
 }
 
-.uc--wrapper .uc--indicators .uc--scroll-left {
-  left: 0;
+.uc--wrapper .uc--indicators.left-right .uc--scroll-right {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translate(100%, -50%);
+}
+
+.uc--wrapper .uc--indicators[class*="left"] {
+  text-align: left;
+}
+
+.uc--wrapper .uc--indicators[class*="right"] {
+  text-align: right;
+}
+
+.uc--wrapper .uc--indicators[class*="center"] {
+  text-align: center;
+}
+
+.uc--wrapper .uc--indicators[class*="bottom"] .uc--arrow {
+  margin-top: 50px;
+}
+
+.uc--wrapper .uc--indicators[class*="bottom"].hide-dots .uc--arrow {
+  margin-top: 20px;
 }
 
 .uc--wrapper .uc--indicators .uc--dots {
@@ -76,28 +99,6 @@
   position: absolute;
   left: 0;
   top: 0;
-}
-
-@media (min-width: 768px) {
-  .uc--wrapper {
-    margin: 0 30px;
-  }
-  .uc--wrapper .uc--indicators .uc--scroll-right {
-    transform: translate(100%, -50%);
-  }
-
-  .uc--wrapper .uc--indicators .uc--scroll-left {
-    transform: translate(-100%, -50%);
-  }
-}
-
-@media (max-width: 767px) {
-  .uc--wrapper .uc--indicators .uc--scroll-left {
-    transform: translate(-100%, -50%);
-  }
-  .uc--wrapper .uc--indicators .uc--scroll-right {
-    transform: translate(100%, -50%);
-  }
 }
 
 /* Faded Edges & Spacing */

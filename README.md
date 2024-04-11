@@ -40,6 +40,8 @@ CSS: https://cdn.jsdelivr.net/gh/bobbyg211/ultimate-carousel@latest/uc-styles.mi
 
 - ADVANCED Swipe to scroll on mobile
 
+- Arrow half opacity when at start or end of non-infinite loop
+
 - Fade In/Out behavior
 
 - Tabbed slider layout

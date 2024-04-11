@@ -16,52 +16,41 @@ const UC = (element, desktopOptions, mobileOptions) => {
   mobileOptions = mobileOptions || {};
 
   const globals = {
+    animationSpeed: 500,
+    autoSlide: false,
+    autoSlideDelay: 3000,
+    continuousLoop: false,
+    continuousSpeed: 5,
+    slideSpace: 20,
+    responsiveness: true,
+    showIndicatorDots: true,
+    itemsPerSlide: 1,
+    maxSlidesShown: 1,
+    navigationDirection: "two-way", // two-way, one-way, none
+    arrowsPosition: "left-right", // "left-right, bottom-left, bottom-right, bottom-center"
+    arrowSize: 50,
     activeViewport: "all", // all, desktop, mobile
     indicatorDotColor: "#c4c4c4",
     indicatorDotActiveColor: "#000000",
-    stopOnHover: true,
     leftArrow: "chevron-left",
     rightArrow: "chevron-right",
   };
 
   if (desktop) {
     defaults = {
-      animationSpeed: 500,
-      autoSlide: false,
-      autoSlideDelay: 3000,
-      continuousLoop: false,
-      continuousSpeed: 5,
       infiniteLoop: true,
-      itemsPerSlide: 1,
-      maxSlidesShown: 1,
-      navigationDirection: "two-way", // two-way, one-way, none
       showPerimeterSlides: "none", // left, right, none, both
       perimeterSlideVisibleAmount: 40,
-      showIndicatorDots: true,
-      slideSpace: 20,
-      responsiveness: true,
       hideArrows: false,
-      arrowSize: 50,
+      stopOnHover: true,
     };
   } else {
     defaults = {
-      animationSpeed: 500,
-      autoSlide: false,
-      autoSlideDelay: 3000,
-      continuousLoop: false,
-      continuousSpeed: 5,
-      infiniteLoop: true,
-      itemsPerSlide: 1,
-      maxSlidesShown: 1,
-      navigationDirection: "two-way", // two-way, one-way, none
-      showPerimeterSlides: "none", // left, right, none, both
+      infiniteLoop: false,
+      showPerimeterSlides: "right", // left, right, none, both
       perimeterSlideVisibleAmount: 80,
-      showIndicatorDots: true,
-      slideSpace: 20,
-      swipeToScroll: true, // unique
-      responsiveness: true,
-      hideArrows: false,
-      arrowSize: 50,
+      swipeToScroll: true,
+      hideArrows: true,
     };
   }
 
@@ -145,7 +134,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Continuous Speed
       if (key === "continuousSpeed") {
-        if ((typeof value === "number" && value > 0) || value === undefined) {
+        if ((typeof value === "number" && value > 0 && value <= 10) || value === undefined) {
           validOpts[key] = value;
         } else {
           errorHandler(option, "number", [], 1, 10);
@@ -284,6 +273,33 @@ const UC = (element, desktopOptions, mobileOptions) => {
         }
       }
 
+      // Arrows Position
+      if (key === "arrowsPosition") {
+        if (
+          value === undefined ||
+          (typeof value === "string" &&
+            (value === "left-right" ||
+              value === "bottom-left" ||
+              value === "bottom-right" ||
+              value === "bottom-center" ||
+              value === "top-left" ||
+              value === "top-right" ||
+              value === "top-center"))
+        ) {
+          validOpts[key] = value;
+        } else {
+          errorHandler(option, "string", [
+            "left-right",
+            "bottom-left",
+            "bottom-right",
+            "bottom-center",
+            "top-left",
+            "top-right",
+            "top-center",
+          ]);
+        }
+      }
+
       // Hide Arrows
       if (key === "hideArrows") {
         if (typeof value === "boolean" || value === undefined) {
@@ -415,6 +431,11 @@ const UC = (element, desktopOptions, mobileOptions) => {
 
       // Stop On Hover
       if (key === "stopOnHover") {
+        // NONE
+      }
+
+      // Arrows Position
+      if (key === "arrowsPosition") {
         // NONE
       }
 
@@ -564,7 +585,9 @@ const UC = (element, desktopOptions, mobileOptions) => {
     // Add arrows and dots
     if (!options.continuousLoop) {
       let indicators = `
-    <div class="uc--indicators">
+    <div class="uc--indicators ${options.arrowsPosition} ${
+        !options.showIndicatorDots ? "hide-dots" : ""
+      }">
       
       ${
         options.navigationDirection === "two-way"
@@ -626,6 +649,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
     carousel.leftArrow = carousel.el.find(".uc--scroll-left");
 
     carousel.carouselIndicsWidth = carousel.el.find(".uc--dots").width();
+    carousel.dots = carousel.el.find(".uc--dots");
     carousel.activeDots = carousel.el.find(".uc--dot.active");
     carousel.leadingDot = carousel.el.find(".uc--dot.active.leading");
     carousel.trailingDot = carousel.el.find(".uc--dot.active.trailing");
@@ -956,7 +980,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
     }
 
     if (options.hideArrows) {
-      carousel.arrows.hide();
+      carousel.arrows.remove();
     }
 
     carousel.el
