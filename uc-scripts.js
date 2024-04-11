@@ -15,9 +15,17 @@ const UC = (element, desktopOptions, mobileOptions) => {
   desktopOptions = desktopOptions || {};
   mobileOptions = mobileOptions || {};
 
+  const globals = {
+    activeViewport: "all", // all, desktop, mobile
+    indicatorDotColor: "#c4c4c4",
+    indicatorDotActiveColor: "#000000",
+    stopOnHover: true,
+    leftArrow: "chevron-left",
+    rightArrow: "chevron-right",
+  };
+
   if (desktop) {
     defaults = {
-      activeViewport: "all", // all, desktop, mobile // unique
       animationSpeed: 500,
       autoSlide: false,
       autoSlideDelay: 3000,
@@ -30,17 +38,10 @@ const UC = (element, desktopOptions, mobileOptions) => {
       showPerimeterSlides: "none", // left, right, none, both
       perimeterSlideVisibleAmount: 40,
       showIndicatorDots: true,
-      indicatorDotColor: "#c4c4c4", // unique
-      indicatorDotActiveColor: "#1ca39c", // unique
-      stopOnHover: true, // unique
       slideSpace: 20,
       responsiveness: true,
       hideArrows: false,
-      arrowSize: 25,
-      leftArrow:
-        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-left.svg",
-      rightArrow:
-        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-right.svg",
+      arrowSize: 50,
     };
   } else {
     defaults = {
@@ -60,11 +61,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
       swipeToScroll: true, // unique
       responsiveness: true,
       hideArrows: false,
-      arrowSize: 25,
-      leftArrow:
-        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-left.svg",
-      rightArrow:
-        "https://raw.githubusercontent.com/bobbyg211/ultimate-carousel/7a42ea7a5afa9c1b4c44d2f35322148bd35fd624/images/grey-arrow-right.svg",
+      arrowSize: 50,
     };
   }
 
@@ -83,6 +80,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
   required = optRequirements(validated);
 
   _.options = {
+    ...globals,
     ...defaults,
     ...validated,
     ...required,
@@ -359,6 +357,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         if (optObj[key]) {
           requiredOpts["infiniteLoop"] = true;
           requiredOpts["showIndicatorDots"] = false;
+          requiredOpts["navigationDirection"] = "none";
           if (mobile) {
             requiredOpts["swipeToScroll"] = false;
           }
@@ -368,7 +367,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
       // Continuous Speed
       if (key === "continuousSpeed") {
         if (optObj[key]) {
-          requiredOpts["navigationDirection"] = "none";
+          // NONE
         }
       }
 
@@ -571,7 +570,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         options.navigationDirection === "two-way"
           ? `<button class="uc--scroll-left uc--arrow">
       <img
-        src="${options.leftArrow}"
+        src="./icons/${options.leftArrow}.svg"
         alt="Scroll Left"
         width="${options.arrowSize}"
         height="auto"
@@ -583,7 +582,7 @@ const UC = (element, desktopOptions, mobileOptions) => {
         options.navigationDirection !== "none"
           ? `<button class="uc--scroll-right uc--arrow">
         <img
-          src="${options.rightArrow}"
+        src="./icons/${options.rightArrow}.svg"
           alt="Scroll Right"
           width="${options.arrowSize}"
           height="auto"

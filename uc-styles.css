@@ -71,7 +71,7 @@
 }
 
 .uc--wrapper .uc--indicators .uc--dots .uc--dot.active {
-  background: #1ca39c;
+  background: #000000;
   opacity: 0.5;
   position: absolute;
   left: 0;

@@ -1,0 +1,9 @@
+body {
+  margin: 0;
+  padding: 50px;
+}
+
+.slides .slide {
+  border: 1px solid black;
+  padding: 20px;
+}

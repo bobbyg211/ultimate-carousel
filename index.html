@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./uc-styles.css" />
+    <link rel="stylesheet" href="./temp.css" />
+    <title>Ultimate Carousel</title>
+  </head>
+  <body>
+    <div class="slides">
+      <div class="slide">Slide 1</div>
+      <div class="slide">Slide 2</div>
+      <div class="slide">Slide 3</div>
+      <div class="slide">Slide 4</div>
+      <div class="slide">Slide 5</div>
+      <div class="slide">Slide 6</div>
+      <div class="slide">Slide 7</div>
+      <div class="slide">Slide 8</div>
+    </div>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+      integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="./uc-scripts.js"></script>
+    <script>
+      const test = UC(
+        ".slides",
+        {
+          animationSpeed: 500,
+          autoSlide: false,
+          autoSlideDelay: 3000,
+          continuousLoop: false,
+          continuousSpeed: 5,
+          infiniteLoop: true,
+          itemsPerSlide: 1,
+          maxSlidesShown: 1,
+          navigationDirection: "two-way", // two-way, one-way, none
+          showPerimeterSlides: "none", // left, right, none, both
+          perimeterSlideVisibleAmount: 40,
+          showIndicatorDots: true,
+
+          stopOnHover: true, // unique
+          slideSpace: 20,
+          responsiveness: true,
+          hideArrows: false,
+          arrowSize: 50,
+        },
+        {
+          animationSpeed: 500,
+          autoSlide: false,
+          autoSlideDelay: 3000,
+          continuousLoop: false,
+          continuousSpeed: 5,
+          infiniteLoop: true,
+          itemsPerSlide: 1,
+          maxSlidesShown: 1,
+          navigationDirection: "two-way", // two-way, one-way, none
+          showPerimeterSlides: "none", // left, right, none, both
+          perimeterSlideVisibleAmount: 80,
+          showIndicatorDots: true,
+          slideSpace: 20,
+          swipeToScroll: true, // unique
+          responsiveness: true,
+          hideArrows: false,
+          arrowSize: 50,
+        }
+      );
+      test.init();
+    </script>
+  </body>
+</html>

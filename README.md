@@ -8,6 +8,11 @@ Currently no documentation exists and while it was built with other users in min
 
 Currently the only stable release is v.0.1.0-beta.
 
+Latest CDN Links:
+
+JS: https://cdn.jsdelivr.net/gh/bobbyg211/ultimate-carousel@latest/uc-scripts.js
+CSS: https://cdn.jsdelivr.net/gh/bobbyg211/ultimate-carousel@latest/uc-styles.css
+
 ## To-Do
 
 ### CRITICAL
