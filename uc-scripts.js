@@ -876,76 +876,81 @@ const UC = (element, desktopOptions, mobileOptions) => {
         pos = carousel.endingPos;
       }
 
-      carousel.scrollArea.animate(
-        {
-          scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
-        },
-        carousel.speed
-      );
-
-      carousel.activeDots
+      carousel.scrollArea
         .animate(
           {
-            width: carousel.dotActiveWidth + 16,
-            marginLeft: `${direction ? "+=0px" : "-=16px"}`,
+            scrollLeft: `${direction ? "+" : "-"}=${carousel.slideWidth}`,
           },
-          carousel.halfSpeed
+          carousel.speed
         )
         .promise()
         .then(function () {
-          carousel.activeDots
-            .animate(
-              {
-                width: carousel.dotActiveWidth,
-                left: `${direction ? "+=16px" : "-=0"}`,
-              },
-              carousel.halfSpeed
-            )
-            .promise()
-            .then(function () {
-              if (direction && carousel.counter !== carousel.max) {
-                carousel.counter++;
-              }
+          if (direction && carousel.counter !== carousel.max) {
+            carousel.counter++;
+          }
 
-              if (!direction) {
-                carousel.activeDots.css("margin-left", "5px");
-                const leadLeftPos = parseInt($(carousel.leadingDot).css("left"), 10),
-                  trailLeftPos = parseInt($(carousel.trailingDot).css("left"), 10);
-                carousel.leadingDot.css("left", leadLeftPos - 16 + "px");
-                carousel.trailingDot.css("left", trailLeftPos - 16 + "px");
-              }
+          if (carousel.counter === edge && options.infiniteLoop) {
+            carousel.scrollArea.scrollLeft(pos);
+            carousel.counter = reset;
+          }
 
-              if (carousel.counter === edge && options.infiniteLoop) {
-                carousel.scrollArea.scrollLeft(pos);
-                carousel.counter = reset;
-              }
+          if (!direction && carousel.counter !== 0) {
+            carousel.counter--;
+          }
 
-              carousel.activeDots.each(function () {
-                if (parseInt($(this).css("left"), 10) === carousel.carouselIndicsWidth + 16) {
-                  $(this).css("left", "-" + (carousel.carouselIndicsWidth - 16) + "px");
-                } else if (parseInt($(this).css("left"), 10) === -carousel.carouselIndicsWidth) {
-                  $(this).css("left", carousel.carouselIndicsWidth + "px");
-                }
-              });
+          carousel.el.find(".uc--slide").each(function (i) {
+            let elLeftPos = $(this).position().left;
 
-              if (!direction && carousel.counter !== 0) {
-                carousel.counter--;
-              }
+            if (elLeftPos > 0 && elLeftPos < carousel.scrollArea.width()) {
+              $(this).addClass("active");
+            } else {
+              $(this).removeClass("active");
+            }
+          });
 
-              carousel.el.find(".uc--slide").each(function (i) {
-                let elLeftPos = $(this).position().left;
-
-                if (elLeftPos > 0 && elLeftPos < carousel.scrollArea.width()) {
-                  $(this).addClass("active");
-                } else {
-                  $(this).removeClass("active");
-                }
-              });
-
-              carousel.rightArrow.css("pointer-events", "auto");
-              carousel.leftArrow.css("pointer-events", "auto");
-            });
+          carousel.rightArrow.css("pointer-events", "auto");
+          carousel.leftArrow.css("pointer-events", "auto");
         });
+
+      if (options.showIndicatorDots) {
+        carousel.activeDots
+          .animate(
+            {
+              width: carousel.dotActiveWidth + 16,
+              marginLeft: `${direction ? "+=0px" : "-=16px"}`,
+            },
+            carousel.halfSpeed
+          )
+          .promise()
+          .then(function () {
+            carousel.activeDots
+              .animate(
+                {
+                  width: carousel.dotActiveWidth,
+                  left: `${direction ? "+=16px" : "-=0"}`,
+                },
+                carousel.halfSpeed
+              )
+              .promise()
+              .then(function () {
+                if (!direction) {
+                  carousel.activeDots.css("margin-left", "5px");
+                  const leadLeftPos = parseInt($(carousel.leadingDot).css("left"), 10),
+                    trailLeftPos = parseInt($(carousel.trailingDot).css("left"), 10);
+                  carousel.leadingDot.css("left", leadLeftPos - 16 + "px");
+                  carousel.trailingDot.css("left", trailLeftPos - 16 + "px");
+                }
+
+                carousel.activeDots.each(function () {
+                  if (parseInt($(this).css("left"), 10) === carousel.carouselIndicsWidth + 16) {
+                    $(this).css("left", "-" + (carousel.carouselIndicsWidth - 16) + "px");
+                  } else if (parseInt($(this).css("left"), 10) === -carousel.carouselIndicsWidth) {
+                    $(this).css("left", carousel.carouselIndicsWidth + "px");
+                  }
+                });
+              });
+          });
+      }
     }
   }
 
